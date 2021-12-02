@@ -1,4 +1,4 @@
-package com.github.h800572003.libs.backed;
+package io.github.h800572003.commons.backed;
 
 public interface BackendRunnable {
 	void execute(BackendContext context);
