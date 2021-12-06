@@ -2,7 +2,7 @@ package io.github.h800572003.commons;
 
 import java.text.MessageFormat;
 
-public class CommonExecpetion extends RuntimeException {
+public class ApBusinessExecpetion extends RuntimeException {
 
 	// ================================================
 	// == [Enumeration constants] Block Start
@@ -21,7 +21,7 @@ public class CommonExecpetion extends RuntimeException {
 	// == [instance variables] Block Stop
 	// ================================================
 	// == [static Constructor] Block Start
-	public CommonExecpetion(String pattern, Object... arguments) {
+	public ApBusinessExecpetion(String pattern, Object... arguments) {
 		super(MessageFormat.format(pattern, arguments));
 	}
 
@@ -29,7 +29,7 @@ public class CommonExecpetion extends RuntimeException {
 	// super(string);
 	// }
 
-	public CommonExecpetion(String string, Throwable throwable) {
+	public ApBusinessExecpetion(String string, Throwable throwable) {
 		super(string, throwable);
 	}
 	// == [static Constructor] Block Stop

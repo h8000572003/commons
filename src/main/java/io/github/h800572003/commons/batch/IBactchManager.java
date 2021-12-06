@@ -31,9 +31,24 @@ public interface IBactchManager {
 	 */
 	void off();
 
+	/**
+	 * 啟動任務
+	 * 
+	 * @param code
+	 */
 	void on(String code);
 
+	/**
+	 * 關閉任務
+	 * 
+	 * @param code
+	 */
 	void off(String code);
-	
-	List<IBactchTaskHolder>getBactchTasks();
+
+	/**
+	 * 取得清單
+	 * 
+	 * @return
+	 */
+	List<IBactchTaskHolder> getBactchTasks();
 }

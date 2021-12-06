@@ -7,7 +7,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import io.github.h800572003.commons.CancelExecpetion;
-import io.github.h800572003.commons.CommonExecpetion;
+import io.github.h800572003.commons.ApBusinessExecpetion;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -75,11 +75,11 @@ public class BactchTaskHolder implements IBactchTaskHolder, IBactchTaskExecuterC
 					log.info("down code{} end", config.getCode());
 				}
 			} else {
-				throw new CommonExecpetion("batch " + config.getCode() + "停止中");
+				throw new ApBusinessExecpetion("batch " + config.getCode() + "停止中");
 			}
 
 		} else {
-			throw new CommonExecpetion("batch " + config.getCode() + "未執行");
+			throw new ApBusinessExecpetion("batch " + config.getCode() + "未執行");
 		}
 
 	}

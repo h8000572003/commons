@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.github.h800572003.commons.CommonExecpetion;
+import io.github.h800572003.commons.ApBusinessExecpetion;
 
 public class BactchManager implements IBactchManager {
 
@@ -15,7 +15,7 @@ public class BactchManager implements IBactchManager {
 	public void register(IBactchTaskConfig config, IBactchTaskExecuter bactchTaskExecuter) {
 		IBactchTaskHolder create = this.create(config, bactchTaskExecuter);
 		if (this.map.containsKey(config.getCode())) {
-			throw new CommonExecpetion("排程作業代碼重複{0}", config.getCode());
+			throw new ApBusinessExecpetion("排程作業代碼重複{0}", config.getCode());
 		}
 		this.map.put(config.getCode(), create);
 		this.tasks.add(create);
@@ -49,7 +49,7 @@ public class BactchManager implements IBactchManager {
 	private IBactchTaskHolder initBactchTaskHolder(String code) {
 		IBactchTaskHolder orDefault = this.map.getOrDefault(code, null);
 		if (orDefault == null) {
-			throw new CommonExecpetion("無此無服務代碼{0}", code);
+			throw new ApBusinessExecpetion("無此無服務代碼{0}", code);
 		}
 		return orDefault;
 	}
