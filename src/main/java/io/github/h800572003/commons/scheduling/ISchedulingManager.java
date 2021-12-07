@@ -9,6 +9,11 @@ package io.github.h800572003.commons.scheduling;
 public interface ISchedulingManager {
 
 	/**
+	 * 參數變更
+	 */
+	void propertiesChange();
+
+	/**
 	 * 
 	 * 更新資訊
 	 * 
