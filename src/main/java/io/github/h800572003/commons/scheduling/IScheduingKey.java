@@ -23,6 +23,6 @@ public interface IScheduingKey {
 	 * 
 	 * @return
 	 */
-	 boolean isActived();
+	boolean isActived();
 
 }

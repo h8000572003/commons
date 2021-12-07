@@ -17,7 +17,7 @@ public abstract class AbstractSchedulingCronContextHolder
 		implements ISchedulingItemContext, IScheduingTaskContext, Runnable {
 	protected IScheduingKey scheduingKey;
 	protected TaskScheduler taskScheduler;
-	protected ApplicationContext context;
+	protected IScheduingTask scheduingTask;
 	protected String message = "";
 	protected ScheduledFuture<?> scheduledFuture = null;
 	protected String startTime = "";
@@ -30,10 +30,10 @@ public abstract class AbstractSchedulingCronContextHolder
 	private int progress = -1;
 
 	public AbstractSchedulingCronContextHolder(IScheduingKey scheduingKey, TaskScheduler taskScheduler,
-			ApplicationContext context, MyScheduingMonitors monitors, ISchedulingContext mainContext) {
+			IScheduingTask scheduingTask, MyScheduingMonitors monitors, ISchedulingContext mainContext) {
 		this.scheduingKey = scheduingKey;
 		this.taskScheduler = taskScheduler;
-		this.context = context;
+		this.scheduingTask = scheduingTask;
 		this.monitors = monitors;
 		this.mainContext = mainContext;
 
@@ -114,9 +114,9 @@ public abstract class AbstractSchedulingCronContextHolder
 				this.startTime = DateUtlis.getText();
 				this.endTime = "";
 				this.status = SchedulingStatusCodes.RUNNNIG;
-				final IScheduingTask bean = this.context.getBean(this.scheduingKey.getPClass());
+			
 				this.monitors.updateStart(this);
-				bean.execute(this);
+				this.scheduingTask.execute(this);
 				// this.message = "OK";
 			} catch (final Exception e) {
 				this.monitors.updateError(this, e);

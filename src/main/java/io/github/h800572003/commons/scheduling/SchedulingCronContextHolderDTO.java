@@ -20,13 +20,12 @@ public class SchedulingCronContextHolderDTO extends AbstractSchedulingCronContex
 	ISchedulingRepository schedulingRepository;
 
 	public SchedulingCronContextHolderDTO(IScheduingCron scheduingCron, TaskScheduler taskScheduler,
-			ApplicationContext context, MyScheduingMonitors scheduingTaskLog,
+			IScheduingTask task, MyScheduingMonitors scheduingTaskLog,
 			ISchedulingRepository schedulingRepository, ISchedulingContext schedulingContext) {
 
-		super(scheduingCron, taskScheduler, context, scheduingTaskLog, schedulingContext);
+		super(scheduingCron, taskScheduler, task, scheduingTaskLog, schedulingContext);
 		this.scheduingCron = Objects.requireNonNull(scheduingCron);
 		this.taskScheduler = Objects.requireNonNull(taskScheduler);
-		this.context = context;
 		this.schedulingRepository = schedulingRepository;
 
 	}

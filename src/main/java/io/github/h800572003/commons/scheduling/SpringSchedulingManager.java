@@ -27,10 +27,9 @@ public class SpringSchedulingManager implements ISchedulingManager {
 	final List<ISchedulingItemContext> list = Collections.synchronizedList(new ArrayList<>());
 
 	private final ISchedulingRepository repository;
-
-	private final ApplicationContext context;
-
+	private final ApplicationContext applicationContext;
 	private final MyScheduingMonitors myScheduingMonitors;
+
 
 	private ScheduledTaskRegistrar taskRegistrar;
 
@@ -92,9 +91,8 @@ public class SpringSchedulingManager implements ISchedulingManager {
 			throw new ApBusinessExecpetion("任務代碼重複{0}", code.getCode());
 		}
 		log.info("add task:{} name:{} cron:({})", code.getCode(), code.getName(), code.getCon());
-
-		this.add(code, new SchedulingCronContextHolderDTO(code, scheduler, context, myScheduingMonitors, repository,
-				getContext()));
+		this.add(code, new SchedulingCronContextHolderDTO(code, scheduler, applicationContext.getBean(code.getPClass()),
+				myScheduingMonitors, repository, getContext()));
 	}
 
 	protected void add(IScheduingCron code, ISchedulingItemContext schedulingItemContext) {
@@ -106,8 +104,8 @@ public class SpringSchedulingManager implements ISchedulingManager {
 			throw new ApBusinessExecpetion("任務代碼重複{0}", code.getCode());
 		}
 		log.info("add task:{} name:{} cron:({})", code.getCode(), code.getName(), code.getCron());
-		this.add(code, new SchedulingDelayContextHolderDTO(code, scheduler, context, myScheduingMonitors, repository,
-				getContext()));
+		this.add(code, new SchedulingDelayContextHolderDTO(code, scheduler,
+				applicationContext.getBean(code.getPClass()), myScheduingMonitors, repository, getContext()));
 	}
 
 	protected void add(IScheduingDelay code, ISchedulingItemContext schedulingItemContext) {
