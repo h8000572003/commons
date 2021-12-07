@@ -20,7 +20,7 @@ public class DeletePropHandler extends BaseCmdHander implements ICmdHander {
 	public String cmd(String action) {
 
 		if (StringUtils.isBlank(action)) {
-			throw new ApBusinessExecpetion("參數錯誤:{0}", action);
+			throw new ApBusinessExecpetion("不提供作業");
 		}
 
 		log.info("category:{}", action);

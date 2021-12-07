@@ -13,7 +13,7 @@ public class UpPropHandler extends BaseCmdHander implements ICmdHander {
 	private IPropertiesService propertiesService;
 
 	public UpPropHandler(ICmdService service, IPropertiesService propertiesService) {
-		super(CmdCodesCofing.Codes.UP.name(), service);
+		super(CmdCodesCofing.Codes.UPPRO.name(), service);
 		this.propertiesService = propertiesService;
 	}
 
