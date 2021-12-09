@@ -36,11 +36,5 @@ public class DeletePropHandler extends BaseCmdHander implements ICmdHander {
 		return CmdContract.OK;
 	}
 
-	public static void main(String[] args) {
-
-		String[] split = StringUtils.split("Catey,1,1,1", ",");
-
-		System.out.println(split);
-	}
 
 }

@@ -5,16 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -22,8 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
+import io.github.chungtsai.cmd.TestCmdService;
+import io.github.chungtsai.cmd.TestCmdService.CmdRunnable;
 import io.github.h800572003.exception.ApBusinessExecpetion;
-import io.github.h800572003.exception.CancelExecpetion;
 import io.github.h800572003.scheduling.SpringSchedulingManager.ISpringSchedulingProperites;
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,7 +60,7 @@ class SpringSchedulingManagerTest {
 
 	@BeforeEach
 	public void before() {
-		runCmd("ON", this::up, 1);
+		TestCmdService.runCmd("ON", this::up, 1);
 	}
 
 	/**
@@ -84,15 +79,16 @@ class SpringSchedulingManagerTest {
 	@Test
 	void testDown() {
 
-		List<CmdRunnable> cmdRunnables = new ArrayList<SpringSchedulingManagerTest.CmdRunnable>();
+		List<CmdRunnable> cmdRunnables = new ArrayList<CmdRunnable>();
 		cmdRunnables.add(new CmdRunnable("DOWN_THREAD", () -> springSchedulingManager.down(), 0, 0));
-		runCmd(cmdRunnables);
+		TestCmdService.runCmd(cmdRunnables);
 
 		showMssage();
 		assertThat(springSchedulingManager.getContext().getAll()).filteredOn(i -> i.getProgress() != 100).hasSize(0);
 
 		log.info("end");
 	}
+
 	@Test
 	void testWatch() {
 
@@ -113,13 +109,13 @@ class SpringSchedulingManagerTest {
 
 		this.setCloseTimeout(1);
 
-		List<CmdRunnable> cmdRunnables = new ArrayList<SpringSchedulingManagerTest.CmdRunnable>();
+		List<CmdRunnable> cmdRunnables = new ArrayList<CmdRunnable>();
 		cmdRunnables.add(new CmdRunnable("DOWN_THREAD", () -> springSchedulingManager.down(), 0, 0));
 
 		CmdRunnable cmdRunnable = new CmdRunnable("UP_THREAD", () -> springSchedulingManager.up(), 0, 2);
-		cmdRunnable.uncaughtExceptionHandler = errorIsOkUncaughtExceptionHandler;
+		cmdRunnable.setUncaughtExceptionHandler(errorIsOkUncaughtExceptionHandler);
 		cmdRunnables.add(cmdRunnable);
-		runCmd(cmdRunnables);
+		TestCmdService.runCmd(cmdRunnables);
 
 		showMssage();
 		assertThat(springSchedulingManager.getContext().getAll()).filteredOn(i -> i.getProgress() != 100)
@@ -148,11 +144,11 @@ class SpringSchedulingManagerTest {
 	// @Timeout(unit = TimeUnit.SECONDS, value = 20)
 	void testStartIntrupt() {
 
-		List<CmdRunnable> cmdRunnables = new ArrayList<SpringSchedulingManagerTest.CmdRunnable>();
+		List<CmdRunnable> cmdRunnables = new ArrayList<CmdRunnable>();
 		cmdRunnables.add(new CmdRunnable("CNACEL_1", () -> springSchedulingManager.cancelAll(), 1, 0));
 		cmdRunnables.add(new CmdRunnable("CNACEL_2", () -> springSchedulingManager.cancelAll(), 1, 0));
 
-		runCmd(cmdRunnables);
+		TestCmdService.runCmd(cmdRunnables);
 		showMssage();
 
 		Optional<ISchedulingItemContext> findAny = springSchedulingManager.getContext().getAll().stream()
@@ -186,17 +182,17 @@ class SpringSchedulingManagerTest {
 
 		ErrorIsOkUncaughtExceptionHandler errorIsOkUncaughtExceptionHandler = new ErrorIsOkUncaughtExceptionHandler();
 
-		List<CmdRunnable> cmdRunnables = new ArrayList<SpringSchedulingManagerTest.CmdRunnable>();
+		List<CmdRunnable> cmdRunnables = new ArrayList<CmdRunnable>();
 		CmdRunnable cmdRunnable1 = new CmdRunnable("START_1",
 				() -> springSchedulingManager.start(Sample.class.getSimpleName()));
-		cmdRunnable1.uncaughtExceptionHandler = errorIsOkUncaughtExceptionHandler;
+		cmdRunnable1.setUncaughtExceptionHandler(errorIsOkUncaughtExceptionHandler);
 		CmdRunnable cmdRunnable2 = new CmdRunnable("START_2",
 				() -> springSchedulingManager.start(Sample.class.getSimpleName()));
-		cmdRunnable2.uncaughtExceptionHandler = errorIsOkUncaughtExceptionHandler;
+		cmdRunnable2.setUncaughtExceptionHandler(errorIsOkUncaughtExceptionHandler);
 		cmdRunnables.add(cmdRunnable1);
 		cmdRunnables.add(cmdRunnable2);
 
-		runCmd(cmdRunnables);
+		TestCmdService.runCmd(cmdRunnables);
 
 		assertThat(errorIsOkUncaughtExceptionHandler.withException).isTrue();
 		assertThat(errorIsOkUncaughtExceptionHandler.messages).hasSize(2);
@@ -225,128 +221,13 @@ class SpringSchedulingManagerTest {
 	// @Timeout(unit = TimeUnit.SECONDS, value = 15)
 	void testRunOnce() {
 
-		this.runCmd("RUNONCE_1", () -> springSchedulingManager.runOnce(Sample.class.getSimpleName()), 5);
-		this.runCmd("RUNONCE_2", () -> springSchedulingManager.runOnce(Sample.class.getSimpleName()));
+		TestCmdService.runCmd("RUNONCE_1", () -> springSchedulingManager.runOnce(Sample.class.getSimpleName()), 5);
+		TestCmdService.runCmd("RUNONCE_2", () -> springSchedulingManager.runOnce(Sample.class.getSimpleName()));
 
 		this.showMssage();
 		assertThat(Sample.atomicInteger.get()).isEqualTo(1);
 
 		log.info("end");
-	}
-
-	class CmdRunnable {
-		String cmd;
-		Runnable runnable;
-		UncaughtExceptionHandler uncaughtExceptionHandler;
-		int wait = 0;
-
-		public CmdRunnable(String cmd, Runnable runnable, int wait, int delayStart) {
-			super();
-			this.cmd = cmd;
-			this.runnable = new DelayRunnable(runnable, delayStart);
-			this.wait = wait;
-		}
-
-		class DelayRunnable implements Runnable {
-
-			private Runnable runnable;
-			private int delayStart = 0;
-
-			public DelayRunnable(Runnable runnable, int delayStart) {
-				super();
-				this.runnable = runnable;
-				this.delayStart = delayStart;
-			}
-
-			@Override
-			public void run() {
-				if (delayStart > 0) {
-					log.info("delay start...{}s", delayStart);
-					try {
-						TimeUnit.SECONDS.sleep(delayStart);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-
-				}
-				runnable.run();
-			}
-
-		}
-
-		public CmdRunnable(String cmd, Runnable runnable) {
-			this(cmd, runnable, 0, 0);
-		}
-
-		public int getWait() {
-			return wait;
-		}
-
-		void sleep() {
-			if (wait > 0) {
-				try {
-					TimeUnit.SECONDS.sleep(wait);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-
-	}
-
-	void runCmd(CmdRunnable cmd) {
-		this.runCmd(Arrays.asList(cmd));
-	}
-
-	void runCmd(List<CmdRunnable> cmds) {
-
-		List<Thread> collect = cmds.stream().map(this::thread).collect(Collectors.toList());
-		collect.forEach(Thread::start);
-		collect.forEach(t -> {
-			try {
-				t.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		});
-		Optional<CmdRunnable> findFirst = cmds.stream()
-				.sorted(Comparator.comparing(new Function<CmdRunnable, Integer>() {
-					@Override
-					public Integer apply(CmdRunnable t) {
-						return t.getWait();
-					}
-				})).findFirst();
-		CmdRunnable cmdRunnable = findFirst.get();
-		cmdRunnable.sleep();
-	}
-
-	Thread thread(CmdRunnable cmdRunnable) {
-		Runnable warp = new Runnable() {
-
-			@Override
-			public void run() {
-				log.info("#### 呼叫" + cmdRunnable.cmd + " ####");
-				cmdRunnable.runnable.run();
-			}
-		};
-		Thread thread = new Thread(warp, cmdRunnable.cmd);
-		if (cmdRunnable.uncaughtExceptionHandler != null) {
-			thread.setUncaughtExceptionHandler(cmdRunnable.uncaughtExceptionHandler);
-		}
-		return thread;
-	}
-
-	void runCmd(String cmd, Runnable runnable, int wait) {
-		this.runCmd(Lists.list(new CmdRunnable(cmd, runnable, wait, 0)));
-	}
-
-	void runCmd(String cmd, Runnable runnable, int wait, int delay) {
-		this.runCmd(Lists.list(new CmdRunnable(cmd, runnable, wait, delay)));
-	}
-
-	void runCmd(String cmd, Runnable runnable) {
-		this.runCmd(Lists.list(new CmdRunnable(cmd, runnable)));
 	}
 
 }
