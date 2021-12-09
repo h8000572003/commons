@@ -1,4 +1,4 @@
-package io.github.h800572003.scheduling.cmd;
+package io.github.h800572003.cmd;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -6,18 +6,19 @@ import io.github.h800572003.exception.ApBusinessExecpetion;
 import io.github.h800572003.scheduling.ISchedulingManager;
 
 /**
- * 啟動命令Handler
+ * 服務停止命令
  * 
  * @author 6407
  *
  */
-public class UpCmdHander extends BaseCmdHander implements ICmdHander {
+public class DownCmdHander extends BaseCmdHander implements ICmdHander {
 
 	private final ISchedulingManager schedulingManager;
 
-	public UpCmdHander(ICmdService service, //
-			ISchedulingManager schedulingManager) {
-		super(CmdCodesCofing.Codes.UP.name(), service);
+	public DownCmdHander(//
+			ICmdService service, //
+			ISchedulingManager schedulingManager) {//
+		super(CmdCodesCofing.Codes.DOWN.name(), service);
 		this.schedulingManager = schedulingManager;
 	}
 
@@ -25,9 +26,9 @@ public class UpCmdHander extends BaseCmdHander implements ICmdHander {
 	public String cmd(String action) {
 		if (StringUtils.isNotBlank(action)) {
 			throw new ApBusinessExecpetion("無提供此命命:{0}", action);
-		} else {
-			this.schedulingManager.up();
+
 		}
+		this.schedulingManager.down();
 		return CmdContract.OK;
 
 	}

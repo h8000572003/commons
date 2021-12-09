@@ -9,6 +9,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
 import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.scheduling.SpringSchedulingManager.ISpringSchedulingProperites;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -16,13 +17,14 @@ public class SchedulingDelayContextHolderDTO extends AbstractSchedulingCronConte
 
 	IScheduingDelay medidata;
 	ISchedulingRepository schedulingRepository;
-
+	ISchedulingContext schedulingContext;
 	public SchedulingDelayContextHolderDTO(IScheduingDelay medidata, TaskScheduler taskScheduler,
-			IScheduingTask task, MyScheduingMonitors scheduingTaskLog,
+			IScheduingTask task, IScheduingMonitor scheduingTaskLog,
 			ISchedulingRepository schedulingRepository, ISchedulingContext schedulingContext) {
 		super(medidata, taskScheduler, task, scheduingTaskLog, schedulingContext);
 		this.medidata = medidata;
 		this.schedulingRepository = schedulingRepository;
+		this.schedulingContext=schedulingContext;
 	}
 
 	@Override
@@ -37,7 +39,8 @@ public class SchedulingDelayContextHolderDTO extends AbstractSchedulingCronConte
 
 								if (StringUtils.isNumeric(this.medidata.getCron())) {
 									final Calendar instance = Calendar.getInstance();
-									instance.add(Calendar.SECOND, 10);
+									ISpringSchedulingProperites properites = this.schedulingContext.getProperites();
+									instance.add(Calendar.SECOND, properites.getDelayStart());
 									this.scheduledFuture = this.taskScheduler.scheduleWithFixedDelay(this,
 											instance.getTime(), Long.parseLong(this.medidata.getCron()));
 								} else {

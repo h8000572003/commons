@@ -1,31 +1,32 @@
-package io.github.h800572003.scheduling.cmd;
+package io.github.h800572003.cmd;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.github.h800572003.exception.ApBusinessExecpetion;
 import io.github.h800572003.scheduling.ISchedulingManager;
 
 /**
- * 啟動命令Handler
+ * 任務更新Handler
  * 
  * @author 6407
  *
  */
-public class InteruptCmdHander extends BaseCmdHander implements ICmdHander {
+public class RreshCmdHander extends BaseCmdHander implements ICmdHander {
 
 	private final ISchedulingManager schedulingManager;
 
-	public InteruptCmdHander(ICmdService service, //
+	public RreshCmdHander(ICmdService service, //
 			ISchedulingManager schedulingManager) {
-		super(CmdCodesCofing.Codes.INTERUPT.name(), service);
+		super(CmdCodesCofing.Codes.REFRESH.name(), service);
 		this.schedulingManager = schedulingManager;
 	}
 
 	@Override
 	public String cmd(String action) {
 		if (StringUtils.isBlank(action)) {
-			this.schedulingManager.cancelAll();
+			throw new ApBusinessExecpetion("不提供全部更新{0}", action);
 		} else {
-			this.schedulingManager.cancel(action);
+			this.schedulingManager.refresh(action);
 		}
 		return CmdContract.OK;
 

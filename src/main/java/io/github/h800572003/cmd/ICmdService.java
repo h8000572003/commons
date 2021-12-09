@@ -1,4 +1,4 @@
-package io.github.h800572003.scheduling.cmd;
+package io.github.h800572003.cmd;
 
 public interface ICmdService {
 

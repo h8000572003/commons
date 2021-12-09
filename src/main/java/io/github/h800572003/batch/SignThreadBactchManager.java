@@ -7,10 +7,13 @@ import java.util.Map;
 
 import io.github.h800572003.exception.ApBusinessExecpetion;
 
-public class BactchManager implements IBactchManager {
+public class SignThreadBactchManager implements IBactchManager {
 
 	private List<IBactchTaskHolder> tasks = new ArrayList<IBactchTaskHolder>();
 	private Map<String, IBactchTaskHolder> map = new HashMap<String, IBactchTaskHolder>();
+
+	protected SignThreadBactchManager() {
+	}
 
 	public void register(IBactchTaskConfig config, IBactchTaskExecuter bactchTaskExecuter) {
 		IBactchTaskHolder create = this.create(config, bactchTaskExecuter);

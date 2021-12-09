@@ -5,7 +5,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 
 import io.github.h800572003.date.DateUtlis;
@@ -23,14 +22,14 @@ public abstract class AbstractSchedulingCronContextHolder
 	protected String startTime = "";
 	protected String endTime = "";
 	protected SchedulingStatusCodes status = SchedulingStatusCodes.IDLE;
-	protected MyScheduingMonitors monitors;
+	protected IScheduingMonitor monitors;
 	protected ISchedulingContext mainContext;
 	protected boolean isUp = true;
 	protected static byte[] UP_LOCK = new byte[] {};
 	private int progress = -1;
 
 	public AbstractSchedulingCronContextHolder(IScheduingKey scheduingKey, TaskScheduler taskScheduler,
-			IScheduingTask scheduingTask, MyScheduingMonitors monitors, ISchedulingContext mainContext) {
+			IScheduingTask scheduingTask, IScheduingMonitor monitors, ISchedulingContext mainContext) {
 		this.scheduingKey = scheduingKey;
 		this.taskScheduler = taskScheduler;
 		this.scheduingTask = scheduingTask;

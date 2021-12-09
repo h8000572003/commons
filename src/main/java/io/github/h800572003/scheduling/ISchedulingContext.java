@@ -3,6 +3,7 @@ package io.github.h800572003.scheduling;
 import java.util.List;
 
 import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.scheduling.SpringSchedulingManager.ISpringSchedulingProperites;
 
 public interface ISchedulingContext {
 
@@ -47,4 +48,6 @@ public interface ISchedulingContext {
 	}
 
 	int getRunningCount();
+	
+	ISpringSchedulingProperites getProperites();
 }

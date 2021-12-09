@@ -1,4 +1,4 @@
-package io.github.h800572003.scheduling.cmd;
+package io.github.h800572003.cmd;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -10,22 +10,22 @@ import io.github.h800572003.scheduling.ISchedulingManager;
  * @author 6407
  *
  */
-public class StartCmdHander extends BaseCmdHander implements ICmdHander {
+public class InteruptCmdHander extends BaseCmdHander implements ICmdHander {
 
 	private final ISchedulingManager schedulingManager;
 
-	public StartCmdHander(ICmdService service, //
+	public InteruptCmdHander(ICmdService service, //
 			ISchedulingManager schedulingManager) {
-		super(CmdCodesCofing.Codes.START.name(), service);
+		super(CmdCodesCofing.Codes.INTERUPT.name(), service);
 		this.schedulingManager = schedulingManager;
 	}
 
 	@Override
 	public String cmd(String action) {
 		if (StringUtils.isBlank(action)) {
-			this.schedulingManager.startAll();
+			this.schedulingManager.cancelAll();
 		} else {
-			this.schedulingManager.start(action);
+			this.schedulingManager.cancel(action);
 		}
 		return CmdContract.OK;
 

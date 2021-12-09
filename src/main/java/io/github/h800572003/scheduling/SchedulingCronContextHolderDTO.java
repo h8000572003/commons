@@ -10,6 +10,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
 import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.scheduling.SpringSchedulingManager.ISpringSchedulingProperites;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -18,15 +19,17 @@ public class SchedulingCronContextHolderDTO extends AbstractSchedulingCronContex
 
 	IScheduingCron scheduingCron;
 	ISchedulingRepository schedulingRepository;
+	ISchedulingContext schedulingContext;
 
 	public SchedulingCronContextHolderDTO(IScheduingCron scheduingCron, TaskScheduler taskScheduler,
-			IScheduingTask task, MyScheduingMonitors scheduingTaskLog,
+			IScheduingTask task, IScheduingMonitor scheduingTaskLog,
 			ISchedulingRepository schedulingRepository, ISchedulingContext schedulingContext) {
 
 		super(scheduingCron, taskScheduler, task, scheduingTaskLog, schedulingContext);
 		this.scheduingCron = Objects.requireNonNull(scheduingCron);
 		this.taskScheduler = Objects.requireNonNull(taskScheduler);
 		this.schedulingRepository = schedulingRepository;
+		this.schedulingContext=schedulingContext;
 
 	}
 
@@ -40,8 +43,11 @@ public class SchedulingCronContextHolderDTO extends AbstractSchedulingCronContex
 						if (this.scheduledFuture == null) {
 							try {
 								if (StringUtils.isNumeric(this.scheduingCron.getCon())) {
+									
+									
 									final Calendar instance = Calendar.getInstance();
-									instance.add(Calendar.SECOND, 10);
+									ISpringSchedulingProperites properites = this.schedulingContext.getProperites();
+									instance.add(Calendar.SECOND, properites.getDelayStart());
 									this.scheduledFuture = this.taskScheduler.scheduleWithFixedDelay(this,
 											instance.getTime(), Long.parseLong(this.scheduingCron.getCon()));
 								} else {

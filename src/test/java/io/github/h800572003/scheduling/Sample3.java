@@ -2,31 +2,42 @@ package io.github.h800572003.scheduling;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.github.h800572003.exception.CancelExecpetion;
-import io.github.h800572003.scheduling.IScheduingTask;
-import io.github.h800572003.scheduling.IScheduingTaskContext;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * 停止時間長任務
+ * 
+ * @author 6407
+ *
+ */
 @Slf4j
-public class Sample implements IScheduingTask {
-
-	final static AtomicInteger atomicInteger = new AtomicInteger(0);
+public class Sample3 implements IScheduingTask {
 
 	@Override
 	public void execute(IScheduingTaskContext scheduingTaskContext) {
 
 		try {
-			atomicInteger.incrementAndGet();
 			for (int i = 0; i < 10; i++) {
 				try {
 					scheduingTaskContext.updateMessage("INDEX:" + i);
 					scheduingTaskContext.checkUp();
+					log.info("do task...{}", i + 1);
 					scheduingTaskContext.setProgress(0);
-					doSomeThing();
+					doSomeThing(i);
+					scheduingTaskContext.setProgress(20);
+					doSomeThing(i);
+					scheduingTaskContext.setProgress(40);
 
+					doSomeThing(i);
+					scheduingTaskContext.setProgress(60);
+
+					doSomeThing(i);
+					scheduingTaskContext.setProgress(80);
+
+					doSomeThing(i);
 					scheduingTaskContext.setProgress(100);
 
 				} catch (CancelExecpetion e) {
@@ -35,21 +46,36 @@ public class Sample implements IScheduingTask {
 				}
 			}
 		} finally {
-			atomicInteger.decrementAndGet();
 		}
 
 		log.info("end job");
 
 	}
 
-	private void doSomeThing() {
+	private void doSomeThing(int index) {
 
 		try {
-			TimeUnit.SECONDS.sleep(10);
-		} catch (InterruptedException e) {
-//			e.printStackTrace();
+			// log.info("index " + index + " start");
+			for (int i = 0; i < 10000; i++) {
+				double nextDouble = nextDouble();
+
+				// System.out.println("i:" + i + " ,value:" + nextDouble);
+				// log.info("random:{}", nextDouble);
+			}
+		} finally {
+			// log.info("index " + index + " done");
 		}
 
+	}
+
+	private double nextDouble() {
+		try {
+			SecureRandom instanceStrong = SecureRandom.getInstanceStrong();
+			return instanceStrong.nextDouble();
+		} catch (NoSuchAlgorithmException e) {
+			log.info("演算法不存在不提供隨機數值");
+			return 0;
+		}
 	}
 
 	static IScheduingCron scheduingCron = new IScheduingCron() {
@@ -61,17 +87,17 @@ public class Sample implements IScheduingTask {
 
 		@Override
 		public Class<? extends IScheduingTask> getPClass() {
-			return Sample.class;
+			return Sample3.class;
 		}
 
 		@Override
 		public String getName() {
-			return Sample.class.getSimpleName();
+			return Sample3.class.getSimpleName();
 		}
 
 		@Override
 		public String getCode() {
-			return Sample.class.getSimpleName();
+			return Sample3.class.getSimpleName();
 		}
 
 		@Override
@@ -79,4 +105,5 @@ public class Sample implements IScheduingTask {
 			return String.valueOf(3000l);
 		}
 	};
+
 }

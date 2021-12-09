@@ -40,7 +40,7 @@ public class PropertiesService implements IPropertiesService {
 		this.codes.add(myCode);
 	}
 
-	public PropertiesService(IPropertiesRepository propertiesRepository) {
+	protected PropertiesService(IPropertiesRepository propertiesRepository) {
 		super();
 	}
 

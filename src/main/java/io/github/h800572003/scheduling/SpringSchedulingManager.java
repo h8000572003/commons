@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
@@ -16,11 +15,12 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import io.github.h800572003.exception.ApBusinessExecpetion;
 import io.github.h800572003.scheduling.SpringSchedulingManager.SpringSchedulingHook.BalankSpringSchedulingHook;
 import io.github.h800572003.utils.HostNameUtls;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class SpringSchedulingManager implements ISchedulingManager {
 
 	final Map<String, ISchedulingItemContext> map = new ConcurrentHashMap<>();
@@ -28,20 +28,72 @@ public class SpringSchedulingManager implements ISchedulingManager {
 
 	private final ISchedulingRepository repository;
 	private final ApplicationContext applicationContext;
-	private final MyScheduingMonitors myScheduingMonitors;
+	private final IScheduingMonitor myScheduingMonitors;
 
 	private ScheduledTaskRegistrar taskRegistrar;
 
 	private int extractThreadSize = 2;
 
 	private SpringSchedulingHook springSchedulingHook = new BalankSpringSchedulingHook();
-	private final SpringSchedulingProperites springSchedulingProperites;
+	private final ISpringSchedulingProperites springSchedulingProperites;
 
-	public interface SpringSchedulingProperites {
+	class SchedulingContext implements ISchedulingContext {
+
+		@Override
+		public boolean isExecuter() {
+			return springSchedulingProperites.isExecute();
+		}
+
+		@Override
+		public String getHostName() {
+			return HostNameUtls.getHostName().toUpperCase();
+		}
+
+		@Override
+		public List<ISchedulingItemContext> getAll() {
+			final List<ISchedulingItemContext> tasks = SpringSchedulingManager.this.getTasks();
+			tasks.sort((s1, s2) -> s1.getCode().compareTo(s2.getCode()));
+			return tasks;
+		}
+
+		@Override
+		public boolean isStart() {
+			return SpringSchedulingManager.this.taskRegistrar != null;
+		}
+
+		@Override
+		public int getRunningCount() {
+			return SpringSchedulingManager.this.getTasks().stream().mapToInt(i -> {
+				boolean equals = i.getStatus().equals(SchedulingStatusCodes.RUNNNIG.name());
+				return equals ? 1 : 0;
+			}).reduce(0, Integer::sum);
+		}
+
+		@Override
+		public ISpringSchedulingProperites getProperites() {
+			return springSchedulingProperites;
+		}
+	}
+
+	public interface ISpringSchedulingProperites {
 		boolean isExecute();
 
+		/**
+		 * down 時間
+		 * 
+		 * @return
+		 */
 		default int getCloseTimeout() {
 			return 60 * 30;
+		}
+
+		/**
+		 * 延遲啟動
+		 * 
+		 * @return
+		 */
+		default int getDelayStart() {
+			return 10;
 		}
 	}
 
@@ -82,7 +134,6 @@ public class SpringSchedulingManager implements ISchedulingManager {
 		};
 	};
 
-	private AtomicInteger atomicInteger = new AtomicInteger();
 	private List<Thread> threads = new ArrayList<>();
 
 	public void add(IScheduingCron code) {
@@ -125,7 +176,6 @@ public class SpringSchedulingManager implements ISchedulingManager {
 				super.destroy();
 			}
 		};
-		atomicInteger.set(0);
 		scheduler.setWaitForTasksToCompleteOnShutdown(true);
 		scheduler.setAwaitTerminationSeconds(30);
 		scheduler.setPoolSize(size);
@@ -175,43 +225,6 @@ public class SpringSchedulingManager implements ISchedulingManager {
 		this.map.values().forEach(item -> item.start());
 	}
 
-	@Override
-	public final ISchedulingContext getContext() {
-		return new ISchedulingContext() {
-
-			@Override
-			public boolean isExecuter() {
-				return springSchedulingProperites.isExecute();
-			}
-
-			@Override
-			public String getHostName() {
-				return HostNameUtls.getHostName().toUpperCase();
-			}
-
-			@Override
-			public List<ISchedulingItemContext> getAll() {
-				final List<ISchedulingItemContext> tasks = SpringSchedulingManager.this.getTasks();
-				tasks.sort((s1, s2) -> s1.getCode().compareTo(s2.getCode()));
-				return tasks;
-			}
-
-			@Override
-			public boolean isStart() {
-				return SpringSchedulingManager.this.taskRegistrar != null;
-			}
-
-			@Override
-			public int getRunningCount() {
-				return SpringSchedulingManager.this.getTasks().stream().mapToInt(i -> {
-					boolean equals = i.getStatus().equals(SchedulingStatusCodes.RUNNNIG.name());
-					return equals ? 1 : 0;
-				}).reduce(0, Integer::sum);
-			}
-
-		};
-	}
-
 	public List<ISchedulingItemContext> getTasks() {
 		return this.list;
 	}
@@ -242,8 +255,7 @@ public class SpringSchedulingManager implements ISchedulingManager {
 				this.scheduler = null;
 				this.taskRegistrar.destroy();
 				this.taskRegistrar = null;
-				this.stopThread();
-				springSchedulingHook.downHook();
+				this.springSchedulingHook.downHook();
 			} finally {
 				this.lock = false;
 				log.info("down end..");
@@ -251,11 +263,6 @@ public class SpringSchedulingManager implements ISchedulingManager {
 
 		}
 
-	}
-
-	private void stopThread() {
-		this.threads.stream().filter(Thread::isAlive).forEach(Thread::stop);
-		this.threads.clear();
 	}
 
 	private void init() {
@@ -288,6 +295,10 @@ public class SpringSchedulingManager implements ISchedulingManager {
 					log.info("服務已啟動");
 					throw new ApBusinessExecpetion("服務已啟動");
 				}
+				long count = this.threads.stream().filter(Thread::isAlive).count();
+				if (count > 0) {
+					throw new ApBusinessExecpetion("任務尚未完全停止，請稍後");
+				}
 				this.taskRegistrar = new ScheduledTaskRegistrar();
 				this.init();
 				springSchedulingHook.upHook();
@@ -317,6 +328,11 @@ public class SpringSchedulingManager implements ISchedulingManager {
 
 	public void setSpringSchedulingHook(SpringSchedulingHook springSchedulingHook) {
 		this.springSchedulingHook = springSchedulingHook;
+	}
+
+	@Override
+	public ISchedulingContext getContext() {
+		return new SchedulingContext();
 	}
 
 }
