@@ -115,7 +115,7 @@ public class WorkLatchService<T> implements Closeable, IWorkService<T> {
 						log.info("發現中斷事情");
 					}
 				}
-				log.info("close Running");
+				log.info("close work");
 				closeDownLatch.countDown();
 
 			}, name).start();
@@ -150,16 +150,18 @@ public class WorkLatchService<T> implements Closeable, IWorkService<T> {
 			log.info("close timeout:{}", e);
 		}
 
-		log.info("close down");
+		log.debug("close down");
 
 	}
 
+	/**
+	 * 堵住，執行清單完成，才繼續
+	 */
 	@Override
 	public void execute() throws InterruptedException {
 		this.countDownLatch = new CountDownLatch(items.size());
 		this.start();
 		this.countDownLatch.await();
-		log.info("###########END##########");
 	}
 
 }
