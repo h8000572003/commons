@@ -26,10 +26,8 @@ public class OrderPool<T extends OrderKey> {
 		String toKey();
 	}
 
-	public void addAll(List<T> list) {
-		for (T key : list) {
-			this.add(key);
-		}
+	public void addAll(List<? extends T> list) {
+		list.stream().forEach(i -> this.add(i));
 	}
 
 	public void add(T t) {
