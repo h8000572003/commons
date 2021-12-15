@@ -10,6 +10,7 @@ import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.List;
+import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
 
@@ -17,62 +18,55 @@ import io.github.h800572003.exception.ApBusinessExecpetion;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class DirMonitor {
+public class DirMonitor implements IDirMonitor {
 
 	private WatchService service;
 	private final IBus eventBus;
-	private Path path;
+	private final Path path;
 	private volatile boolean start = false;
+	List<WatchEvent.Kind<?>> eventsList = Lists.newArrayList();
 
 	public DirMonitor(IBus eventBus, String targe, String... morePath) {
 		super();
 		this.eventBus = eventBus;
-		this.start = start;
+		this.start = this.start;
 		this.path = Paths.get(targe, morePath);
+
 	}
 
-	public void startMonitor() throws IOException {
-		this.startMonitor(Lists.newArrayList());
-	}
-
-	public void startMonitor(List<WatchEvent.Kind<?>> events) throws IOException {
-		if (events.isEmpty()) {
-			events.add(StandardWatchEventKinds.ENTRY_CREATE);
-			events.add(StandardWatchEventKinds.ENTRY_DELETE);
-			events.add(StandardWatchEventKinds.ENTRY_MODIFY);
-			events.add(StandardWatchEventKinds.OVERFLOW);
-		}
+	@Override
+	public void startMonitor(WatchEvent.Kind<?>... events) throws IOException {
 		if (this.service != null) {
 			throw new ApBusinessExecpetion("服務已啟動");
 		}
+		addEventList(events);
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			try {
 
 				log.info("Shutdown");
 				this.service.close();
-			} catch (IOException e) {
-				log.error(e.getMessage());
+			} catch (final IOException e) {
+				log.error(e.getMessage(), e);
 			}
 		}));
 
 		this.service = FileSystems.getDefault().newWatchService();
-		this.path.register(service, events.toArray(new WatchEvent.Kind<?>[events.size()]));
-
+		this.path.register(this.service, this.eventsList.toArray(new WatchEvent.Kind<?>[this.eventsList.size()]));
 		this.start = true;
-		while (start) {
+		while (this.start) {
 
 			try {
-				WatchKey take = service.take();
-				List<WatchEvent<?>> pollEvents = take.pollEvents();
+				final WatchKey take = this.service.take();
+				final List<WatchEvent<?>> pollEvents = take.pollEvents();
 
 				pollEvents.forEach(e -> {
-					Path path = (Path) e.context();
-					Kind<?> kind = e.kind();
-					Path resolve = this.path.resolve(path);
-					eventBus.post(new FileChangeEvent(resolve, kind));
+					final Path path = (Path) e.context();
+					final Kind<?> kind = e.kind();
+					final Path resolve = this.path.resolve(path);
+					this.eventBus.post(new FileChangeEvent(resolve, kind));
 				});
-			} catch (InterruptedException e1) {
-				start = false;
+			} catch (final InterruptedException e1) {
+				this.start = false;
 				log.info("中斷作業");
 			}
 
@@ -81,6 +75,18 @@ public class DirMonitor {
 
 	}
 
+	private void addEventList(WatchEvent.Kind<?>... events) {
+		if (events.length == 0) {
+			this.eventsList.add(StandardWatchEventKinds.ENTRY_CREATE);
+			this.eventsList.add(StandardWatchEventKinds.ENTRY_DELETE);
+			this.eventsList.add(StandardWatchEventKinds.ENTRY_MODIFY);
+			this.eventsList.add(StandardWatchEventKinds.OVERFLOW);
+		} else {
+			Stream.of(events).forEach(this.eventsList::add);
+		}
+	}
+
+	@Override
 	public void close() throws IOException {
 		this.start = false;
 	}

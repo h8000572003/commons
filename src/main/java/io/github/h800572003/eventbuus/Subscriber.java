@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 public class Subscriber {
 
 	private boolean isDisable = false;
-	private Object subscriber;
-	private Method method;
+	private final Object subscriber;
+	private final Method method;
 
 	public Subscriber(Object subscriber, Method method) {
 		this.subscriber = subscriber;
@@ -14,7 +14,7 @@ public class Subscriber {
 	}
 
 	public boolean isDisable() {
-		return isDisable;
+		return this.isDisable;
 	}
 
 	public void setDisable(boolean isDisable) {
@@ -22,11 +22,11 @@ public class Subscriber {
 	}
 
 	public Object getSubscriber() {
-		return subscriber;
+		return this.subscriber;
 	}
 
 	public Method getMethod() {
-		return method;
+		return this.method;
 	}
 
 }

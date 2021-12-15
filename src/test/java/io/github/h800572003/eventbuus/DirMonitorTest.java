@@ -21,7 +21,7 @@ class DirMonitorTest {
 	void test() {
 		IBus bus = new EventBus("myBus");
 		bus.register(fileChangeEventSubscribe);
-		DirMonitor dirMonitor = new DirMonitor(bus, "/EHU2", "");
+		IDirMonitor dirMonitor = new DirMonitor(bus, "/EHU2", "");
 
 		Thread thread = new Thread() {
 			public void run() {

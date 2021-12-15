@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadFactory;
 
 public class EventBus implements IBus {
 
-	private Registry registry;
+	private final Registry registry;
 	private final Dispatchar dispatchar;
 	private final String busName;
 
@@ -15,11 +15,11 @@ public class EventBus implements IBus {
 
 		@Override
 		public Thread newThread(Runnable r) {
-			return new Thread(r, busName + "_" + getSel());
+			return new Thread(r, EventBus.this.busName + "_" + getSel());
 		}
 
 		public synchronized int getSel() {
-			return index++;
+			return this.index++;
 		}
 
 	}
@@ -38,19 +38,19 @@ public class EventBus implements IBus {
 
 	public EventBus(String busName, ExecutorService executor, EventExceptionxHandler eventExceptionxhandler) {
 		this.registry = new Registry();
-		this.dispatchar = new Dispatchar(this, registry, executor, eventExceptionxhandler);
+		this.dispatchar = new Dispatchar(this, this.registry, executor, eventExceptionxhandler);
 		this.busName = busName;
 	}
 
 	@Override
 	public void register(Object subscriber) {
-		registry.bind(subscriber);
+		this.registry.bind(subscriber);
 
 	}
 
 	@Override
 	public void unRegister(Object subscriber) {
-		registry.ubbind(subscriber);
+		this.registry.ubbind(subscriber);
 
 	}
 

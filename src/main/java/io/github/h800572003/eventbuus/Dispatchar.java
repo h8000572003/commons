@@ -35,16 +35,16 @@ public class Dispatchar {
 	 * @param event
 	 */
 	public void dispatch(String topic, Object event) {
-		Queue<Subscriber> subscribers = registry.getQueueByTopic(topic);
+		final Queue<Subscriber> subscribers = this.registry.getQueueByTopic(topic);
 		if (subscribers == null) {
-			if (eventExceptionxhandler != null) {
+			if (this.eventExceptionxhandler != null) {
 				// eventExceptionxhandler.handle();
 			}
 		} else {
 			subscribers.stream().filter(i -> {
-				Class<?> class1 = i.getMethod().getParameterTypes()[0];
+				final Class<?> class1 = i.getMethod().getParameterTypes()[0];
 				return class1.isAssignableFrom(event.getClass());
-			}).forEach(i -> this.invoke(bus, i, event));
+			}).forEach(i -> this.invoke(this.bus, i, event));
 		}
 	}
 
@@ -54,7 +54,7 @@ public class Dispatchar {
 				subscriber.getMethod().invoke(subscriber.getSubscriber(), event);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				e.printStackTrace();
-				if (eventExceptionxhandler != null) {
+				if (this.eventExceptionxhandler != null) {
 
 				}
 			}

@@ -6,7 +6,7 @@ import java.nio.file.WatchEvent.Kind;
 
 public class FileChangeEvent {
 
-	private Path path;
+	private final Path path;
 	private final WatchEvent.Kind<?> kinds;
 	public FileChangeEvent(Path path, Kind<?> kinds) {
 		super();
@@ -14,10 +14,10 @@ public class FileChangeEvent {
 		this.kinds = kinds;
 	}
 	public Path getPath() {
-		return path;
+		return this.path;
 	}
 	public WatchEvent.Kind<?> getKinds() {
-		return kinds;
+		return this.kinds;
 	}
 
 }

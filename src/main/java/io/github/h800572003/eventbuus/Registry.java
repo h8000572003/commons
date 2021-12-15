@@ -16,13 +16,13 @@ public class Registry {
 	Map<String, Queue<Subscriber>> map = Maps.newConcurrentMap();
 
 	void bind(Object subscriber) {
-		List<Method> methods = this.findMethods(subscriber);
+		final List<Method> methods = this.findMethods(subscriber);
 		methods.forEach(m -> tirerSubcruber(subscriber, m));
 	}
 
 	private List<Method> findMethods(Object subscriber) {
-		List<Method> methods = Lists.newArrayList();
-		Method[] declaredMethods = subscriber.getClass().getDeclaredMethods();
+		final List<Method> methods = Lists.newArrayList();
+		final Method[] declaredMethods = subscriber.getClass().getDeclaredMethods();
 
 		Stream.of(declaredMethods).filter(///
 				i -> i.isAnnotationPresent(Subscribe.class) //
@@ -37,13 +37,13 @@ public class Registry {
 	public void tirerSubcruber(Object subscriber, Method method) {
 
 		final Subscribe subscribe = method.getDeclaredAnnotation(Subscribe.class);
-		String topic = subscribe.topic();
+		final String topic = subscribe.topic();
 
-		map.computeIfAbsent(topic, key -> new ConcurrentLinkedQueue<Subscriber>());
-		map.get(topic).add(new Subscriber(subscriber, method));
+		this.map.computeIfAbsent(topic, key -> new ConcurrentLinkedQueue<>());
+		this.map.get(topic).add(new Subscriber(subscriber, method));
 	}
 
 	public Queue<Subscriber> getQueueByTopic(String topic) {
-		return map.get(topic);
+		return this.map.get(topic);
 	}
 }
