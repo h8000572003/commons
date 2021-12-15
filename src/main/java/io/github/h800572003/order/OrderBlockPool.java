@@ -8,28 +8,26 @@ import java.util.Set;
 
 import com.google.common.collect.Lists;
 
-import io.github.h800572003.order.OrderPool.OrderKey;
+import io.github.h800572003.order.IOrderBlockPool.OrderKey;
 
-public class OrderPool<T extends OrderKey> {
+public class OrderBlockPool<T extends OrderKey> implements IOrderBlockPool<T> {
 
 	private LinkedList<T> waitPool = Lists.newLinkedList();
 	private LinkedList<T> cachePool = Lists.newLinkedList();
 	private Set<String> waitPoolSet = new HashSet<>();// 待處理集合
 
-	public static <T extends OrderKey> OrderPool<T> getPool() {
-		return new OrderPool<T>();
+	public static <T extends OrderKey> IOrderBlockPool<T> getPool() {
+		return new OrderBlockPool<T>();
 	}
 
 	private Object mute = new Object();
 
-	interface OrderKey {
-		String toKey();
-	}
-
+	@Override
 	public void addAll(List<? extends T> list) {
 		list.stream().forEach(i -> this.add(i));
 	}
 
+	@Override
 	public void add(T t) {
 		synchronized (mute) {
 			if (!this.isKeyInWait(t)) {
@@ -47,10 +45,11 @@ public class OrderPool<T extends OrderKey> {
 		this.waitPoolSet.add(t.toKey());
 	}
 
+	@Override
 	public T take() throws InterruptedException {
 		synchronized (mute) {
 			while (waitPool.isEmpty()) {// 緩衝池也無東西
-				mute.wait(5);
+				mute.wait();
 			}
 			T removeFirst = waitPool.removeFirst();
 			return removeFirst;
@@ -58,6 +57,7 @@ public class OrderPool<T extends OrderKey> {
 
 	}
 
+	@Override
 	public List<T> takeAll() throws InterruptedException {
 		synchronized (mute) {
 			List<T> list = Lists.newArrayList();
@@ -71,12 +71,14 @@ public class OrderPool<T extends OrderKey> {
 
 	}
 
+	@Override
 	public boolean hasNext() {
 		synchronized (mute) {
 			return !cachePool.isEmpty() || !waitPoolSet.isEmpty();
 		}
 	}
 
+	@Override
 	public void removeKey(T key) {
 		synchronized (mute) {
 			waitPoolSet.remove(key.toKey());
@@ -96,6 +98,13 @@ public class OrderPool<T extends OrderKey> {
 	private boolean isKeyInWait(T key) {
 		synchronized (waitPoolSet) {
 			return waitPoolSet.contains(key.toKey());
+		}
+	}
+
+	@Override
+	public int size() {
+		synchronized (mute) {
+			return cachePool.size() + waitPoolSet.size();
 		}
 	}
 }

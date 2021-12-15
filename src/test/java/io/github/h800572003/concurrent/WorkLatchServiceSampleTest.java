@@ -8,8 +8,6 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import io.github.h800572003.concurrent.WorkLatchService.ErrorCallable;
-import io.github.h800572003.concurrent.WorkLatchService.WorkExecutor;
 import io.github.h800572003.concurrent.WorkLatchServiceSampleTest.Item;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,8 +47,8 @@ public class WorkLatchServiceSampleTest implements WorkExecutor<Item>, ErrorCall
 						int nextInt = ThreadLocalRandom.current().nextInt(1, 3);
 						newService.addItem(new Item(i, nextInt));
 					});
+				
 					newService.execute();
-
 				}
 			} catch (InterruptedException e) {
 				log.info("任務中斷");

@@ -31,25 +31,6 @@ public class WorkLatchService<T> implements Closeable, IWorkService<T> {
 	private WorkExecutor<T> workExecutor;
 	private ErrorCallable<T> errorCallable;
 
-	public static class NoneErrorCallable<T> implements ErrorCallable<T> {
-
-		@Override
-		public void execute(Object t, Throwable throwable) {
-			// 忽略錯誤
-		}
-
-	}
-
-	/**
-	 * 異常call Exception
-	 * 
-	 * @author 6407
-	 *
-	 * @param <T>
-	 */
-	public interface ErrorCallable<T> {
-		void execute(T t, Throwable throwable);
-	}
 
 	public static <T> WorkLatchService<T> newService(String prefName, int workSize, WorkExecutor<T> workListener) {
 		return new WorkLatchService<T>(prefName, workSize, workListener, new NoneErrorCallable<>(), 5);
@@ -93,18 +74,15 @@ public class WorkLatchService<T> implements Closeable, IWorkService<T> {
 		}
 	}
 
-	interface WorkExecutor<T> {
-		void execute(T t);
-	}
-
 	public class Work {
 
 		private WorkLatchService<T> homewrokCountDownLatch;
+		private Thread thread;
 
 		public Work(WorkLatchService<T> homewrokCountDownLatch, String name) {
 			super();
 			this.homewrokCountDownLatch = homewrokCountDownLatch;
-			new Thread(() -> {
+			this.thread = new Thread(() -> {
 				while (!isClose) {
 					try {
 						startDownLatch.await();
@@ -118,7 +96,8 @@ public class WorkLatchService<T> implements Closeable, IWorkService<T> {
 				log.info("close work");
 				closeDownLatch.countDown();
 
-			}, name).start();
+			}, name);
+			this.thread.start();
 		}
 
 		protected void execute(T t) {
@@ -130,6 +109,7 @@ public class WorkLatchService<T> implements Closeable, IWorkService<T> {
 				}
 			}
 		}
+
 	}
 
 	protected void start() {

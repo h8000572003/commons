@@ -1,6 +1,6 @@
 package io.github.h800572003.order;
 
-import io.github.h800572003.order.OrderPool.OrderKey;
+import io.github.h800572003.order.IOrderBlockPool.OrderKey;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 

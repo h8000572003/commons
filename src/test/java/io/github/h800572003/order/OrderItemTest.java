@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
-import io.github.h800572003.order.OrderPool.OrderKey;
+import io.github.h800572003.order.IOrderBlockPool.OrderKey;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -20,7 +20,7 @@ public class OrderItemTest {
 
 	@Test
 	void testOrder() {
-		OrderPool<OrderItem> pool = OrderPool.getPool();
+		IOrderBlockPool<OrderItem> pool = OrderBlockPool.getPool();
 
 		OrderItem add = this.add("A", "B", 1);
 		OrderItem add2 = this.add("A", "B", 2);
