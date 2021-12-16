@@ -4,7 +4,7 @@ public interface BackendContext {
 	/**
 	 * 檢查
 	 * 
-	 * @throws BackendCancelException
+	 * @throws BackendCancelException 中斷
 	 */
 	void checkUp() throws BackendCancelException;
 
@@ -15,7 +15,7 @@ public interface BackendContext {
 	/**
 	 * 訂閱關閉事件
 	 * 
-	 * @param shutdownHookEvent
+	 * @param shutdownHookEvent 關閉事件
 	 */
 	void registerShutdownHook(ShutdownHookEvent shutdownHookEvent);
 
