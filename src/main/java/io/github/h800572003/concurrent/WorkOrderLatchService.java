@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 門閂KEY鎖工人服務
  * 
- * @author 6407 同樣OrderKey資料有依照時間執行。
+ * @author 6407 同樣OrderKey資料有依照時間執行。o
  * @param <T>
  */
 @Slf4j
@@ -25,7 +25,7 @@ public class WorkOrderLatchService<T extends OrderKey> implements Closeable, IWo
 	private List<Work> works = Lists.newArrayList();
 	private CountDownLatch countDownLatch;
 	private CountDownLatch startDownLatch = new CountDownLatch(1);
-	private CountDownLatch closeDownLatch;//關閉
+	private CountDownLatch closeDownLatch;// 關閉
 	private boolean isClose = false;
 	private int closeTimeout = 5;
 	private WorkExecutor<T> workExecutor;

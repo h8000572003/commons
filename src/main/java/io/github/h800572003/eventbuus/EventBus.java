@@ -4,25 +4,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
+
 public class EventBus implements IBus {
 
 	private final Registry registry;
 	private final Dispatchar dispatchar;
-	private final String busName;
-
-	public final class MyThreadFactory implements ThreadFactory {
-		private int index = 0;
-
-		@Override
-		public Thread newThread(Runnable r) {
-			return new Thread(r, EventBus.this.busName + "_" + getSel());
-		}
-
-		public synchronized int getSel() {
-			return this.index++;
-		}
-
-	}
+	private String busName;
 
 	private static class NONEEventExceptionxHandler implements EventExceptionxHandler {
 
@@ -33,13 +21,22 @@ public class EventBus implements IBus {
 	}
 
 	public EventBus(String busName) {
-		this(busName, Executors.newSingleThreadExecutor());
+		this(busName, 1);
+	}
+
+	public EventBus(String busName, int size) {
+		this(busName, Executors.newFixedThreadPool(size, new CustomizableThreadFactory(busName)));
+	}
+
+	public EventBus(String busName, EventExceptionxHandler eventExceptionxhandler, int size) {
+		this(busName, Executors.newFixedThreadPool(size, new CustomizableThreadFactory(busName)),
+				eventExceptionxhandler);
 	}
 
 	public EventBus(String busName, ExecutorService executor, EventExceptionxHandler eventExceptionxhandler) {
+		this.busName = busName;
 		this.registry = new Registry();
 		this.dispatchar = new Dispatchar(this, this.registry, executor, eventExceptionxhandler);
-		this.busName = busName;
 	}
 
 	@Override

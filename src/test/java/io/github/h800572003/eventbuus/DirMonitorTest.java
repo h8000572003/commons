@@ -3,16 +3,15 @@ package io.github.h800572003.eventbuus;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import com.google.common.collect.Lists;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Disabled
 class DirMonitorTest {
 
 	FileChangeEventSubscribe fileChangeEventSubscribe = new FileChangeEventSubscribe();

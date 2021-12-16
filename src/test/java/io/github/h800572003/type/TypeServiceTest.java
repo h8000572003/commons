@@ -1,4 +1,4 @@
-package io.github.h800572003.status;
+package io.github.h800572003.type;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -6,17 +6,10 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import org.junit.jupiter.api.Test;
 
 import io.github.h800572003.exception.ApBusinessExecpetion;
-import io.github.h800572003.scheduling.Sample;
-import io.github.h800572003.status.TypeService.StatusKey;
 
-public class TestTypeService {
+public class TypeServiceTest {
 
-	static class ActionA implements StatusKey {
-
-		@Override
-		public String toStatus() {
-			return ActionA.class.getName();
-		}
+	static class ActionA {
 
 		public Out function(DTO dto) {
 			return new Out(dto);
@@ -24,12 +17,17 @@ public class TestTypeService {
 
 	}
 
-	class DTO {
+	class DTO implements ITypeContext {
 		String value;
 
 		public DTO(String value) {
 			super();
 			this.value = value;
+		}
+
+		@Override
+		public String toTypeId() {
+			return value;
 		}
 
 	}
@@ -47,26 +45,27 @@ public class TestTypeService {
 	@Test
 	void testWithRegisterStatus() {
 
-		ActionA actionA = new ActionA();
-		TypeService<DTO, Out> createService = TypeService.createService();
-		createService.register(actionA, actionA::function);
-		DTO dto = new DTO("A");
-		Out action = createService.action(actionA, dto);
+		ActionA actionA = new ActionA();//TYPE_A >ACTION
 
-		assertThat(action.dto).isEqualTo(dto);
+		TypeService<DTO> createService = TypeService.createService();
+		createService.register("TYPE_A", actionA::function);
+
+		DTO dto = new DTO("TYPE_A");
+		Out dispatch = (Out) createService.dispatch(createService, dto);
+
+		assertThat(dispatch.dto).isEqualTo(dto);
 	}
 
 	@Test
 	void testWithoutRegisterStatus() {
 		ActionA actionA = new ActionA();
-		TypeService<DTO, Out> createService = TypeService.createService();
-		DTO dto = new DTO("A");
+		TypeService<DTO> createService = TypeService.createService();
+		DTO dto = new DTO("NONE_TYPE");
 
 		assertThatExceptionOfType(ApBusinessExecpetion.class).isThrownBy(() -> {
-			createService.action(actionA, dto);
+			createService.dispatch(actionA, dto);
 		}).withMessageContaining("未定義該狀態");
-		
-		
+
 	}
 
 }

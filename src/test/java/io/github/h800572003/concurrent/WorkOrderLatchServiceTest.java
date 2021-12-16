@@ -69,6 +69,7 @@ class WorkOrderLatchServiceTest implements WorkExecutor<Order>, ErrorCallable<Or
 		Mockito.verify(sorkOrderLatchServiceTest, Mockito.times(8)).execute(Mockito.any());
 	}
 
+
 	@Override
 	public void execute(Order t, Throwable throwable) {
 		log.info("order :{}", t, throwable);
