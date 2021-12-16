@@ -19,6 +19,7 @@ class EventBusTest {
 		bus.register(sampleSubscribe2);
 
 		bus.post(createDoorEvent);
+		bus.close();
 
 		// Mockito.verify(sampleSubscribe,
 		// Mockito.times(1)).handle(createDoorEvent);

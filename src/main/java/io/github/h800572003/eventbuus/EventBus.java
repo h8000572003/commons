@@ -2,9 +2,10 @@ package io.github.h800572003.eventbuus;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
+
+import io.github.h800572003.exception.ApBusinessExecpetion;
 
 public class EventBus implements IBus {
 
@@ -12,12 +13,22 @@ public class EventBus implements IBus {
 	private final Dispatchar dispatchar;
 	private String busName;
 
-	private static class NONEEventExceptionxHandler implements EventExceptionxHandler {
+	private static class ApEventExceptionxHandler implements EventExceptionxHandler {
+
+		@Override
+		public void handle(String message) {
+			throw new ApBusinessExecpetion(message);
+		}
+
+		@Override
+		public void handle(String message, Exception e) {
+			throw new ApBusinessExecpetion(message, e);
+		}
 
 	}
 
 	public EventBus(String busName, ExecutorService executor) {
-		this(busName, executor, new NONEEventExceptionxHandler());
+		this(busName, executor, new ApEventExceptionxHandler());
 	}
 
 	public EventBus(String busName) {
@@ -65,8 +76,7 @@ public class EventBus implements IBus {
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
-
+		dispatchar.close();
 	}
 
 	@Override

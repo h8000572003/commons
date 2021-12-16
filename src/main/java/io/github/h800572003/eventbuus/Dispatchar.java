@@ -29,14 +29,16 @@ public class Dispatchar {
 	/**
 	 * 指派
 	 * 
-	 * @param topic 主題
-	 * @param event 事件
+	 * @param topic
+	 *            主題
+	 * @param event
+	 *            事件
 	 */
 	public void dispatch(String topic, Object event) {
 		final Queue<Subscriber> subscribers = this.registry.getQueueByTopic(topic);
 		if (subscribers == null) {
 			if (this.eventExceptionxhandler != null) {
-				// eventExceptionxhandler.handle();
+				eventExceptionxhandler.handle("無訂閱者");
 			}
 		} else {
 			subscribers.stream().filter(i -> {
@@ -51,9 +53,8 @@ public class Dispatchar {
 			try {
 				subscriber.getMethod().invoke(subscriber.getSubscriber(), event);
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
 				if (this.eventExceptionxhandler != null) {
-
+					eventExceptionxhandler.handle("invoke error:" + event.getClass().getName(), e);
 				}
 			}
 		});
