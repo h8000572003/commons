@@ -4,6 +4,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -41,10 +42,17 @@ class WorkOrderLatchServiceTest implements WorkExecutor<Order>, ErrorCallable<Or
 	@Test
 	void test() {
 
+		WorkLatchDoneCallable<Order> workLatchDoneCallable = new WorkLatchDoneCallable<Order>() {
+			@Override
+			public void call(Order src, Throwable throwable) {
+				log.info("done src:{}", ToStringBuilder.reflectionToString(src));
+
+			}
+		};
 		WorkOrderLatchServiceTest sorkOrderLatchServiceTest = Mockito.spy(new WorkOrderLatchServiceTest());
 		IOrderBlockPool<Order> pool = OrderBlockPool.getPool();
-		WorkOrderLatchService<Order> createWorkOrderLatchService = WorkOrderLatchService
-				.createWorkOrderLatchService("WorkOrderLatchServiceTest", 2, sorkOrderLatchServiceTest, pool);
+		WorkOrderLatchService<Order> createWorkOrderLatchService = WorkOrderLatchService.createWorkOrderLatchService(
+				"WorkOrderLatchServiceTest", 1, sorkOrderLatchServiceTest, pool, null, 30, workLatchDoneCallable);
 		try (WorkOrderLatchService<Order> newService = createWorkOrderLatchService) {
 			try {
 
@@ -68,7 +76,6 @@ class WorkOrderLatchServiceTest implements WorkExecutor<Order>, ErrorCallable<Or
 		}
 		Mockito.verify(sorkOrderLatchServiceTest, Mockito.times(8)).execute(Mockito.any());
 	}
-
 
 	@Override
 	public void execute(Order t, Throwable throwable) {

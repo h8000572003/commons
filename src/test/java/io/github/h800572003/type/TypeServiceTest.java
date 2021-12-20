@@ -45,13 +45,13 @@ public class TypeServiceTest {
 	@Test
 	void testWithRegisterStatus() {
 
-		ActionA actionA = new ActionA();//TYPE_A >ACTION
+		ActionA actionA = new ActionA();// TYPE_A >ACTION
 
 		TypeService<DTO> createService = TypeService.createService();
 		createService.register("TYPE_A", actionA::function);
 
 		DTO dto = new DTO("TYPE_A");
-		Out dispatch = (Out) createService.dispatch(createService, dto);
+		Out dispatch = (Out) createService.dispatch(dto);
 
 		assertThat(dispatch.dto).isEqualTo(dto);
 	}
@@ -63,7 +63,7 @@ public class TypeServiceTest {
 		DTO dto = new DTO("NONE_TYPE");
 
 		assertThatExceptionOfType(ApBusinessExecpetion.class).isThrownBy(() -> {
-			createService.dispatch(actionA, dto);
+			createService.dispatch(dto);
 		}).withMessageContaining("未定義該狀態");
 
 	}

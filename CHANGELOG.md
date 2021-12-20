@@ -12,3 +12,7 @@
 **v.0.7.2**
 - 建立日期：2021/12/16 
 - 新增功能：補上EventBus，EventExceptionxHandler
+
+**v.0.7.5**
+- 建立日期：2021/12/16 
+- 新增功能：加入WorkLatchDoneCallable

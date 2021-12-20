@@ -65,10 +65,10 @@ public class TypeService<I extends ITypeContext> {
 		this.map.put(typeKey, function);
 	}
 
-	public Object dispatch(Object statusKey, I input) {
+	public Object dispatch(I input) {
 		Function<I, ?> orDefault = this.map.getOrDefault(TypeKey.create(input), null);
 		if (orDefault == null) {
-			orDefault = notFondPolicy.none(statusKey);
+			orDefault = notFondPolicy.none(input);
 		}
 		return orDefault.apply(input);
 	}
