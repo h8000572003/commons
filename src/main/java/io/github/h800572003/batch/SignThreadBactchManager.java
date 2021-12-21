@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 
 public class SignThreadBactchManager implements IBactchManager {
 
@@ -18,7 +18,7 @@ public class SignThreadBactchManager implements IBactchManager {
 	public void register(IBactchTaskConfig config, IBactchTaskExecuter bactchTaskExecuter) {
 		IBactchTaskHolder create = this.create(config, bactchTaskExecuter);
 		if (this.map.containsKey(config.getCode())) {
-			throw new ApBusinessExecpetion("排程作業代碼重複{0}", config.getCode());
+			throw new ApBusinessException("排程作業代碼重複{0}", config.getCode());
 		}
 		this.map.put(config.getCode(), create);
 		this.tasks.add(create);
@@ -52,7 +52,7 @@ public class SignThreadBactchManager implements IBactchManager {
 	private IBactchTaskHolder initBactchTaskHolder(String code) {
 		IBactchTaskHolder orDefault = this.map.getOrDefault(code, null);
 		if (orDefault == null) {
-			throw new ApBusinessExecpetion("無此無服務代碼{0}", code);
+			throw new ApBusinessException("無此無服務代碼{0}", code);
 		}
 		return orDefault;
 	}

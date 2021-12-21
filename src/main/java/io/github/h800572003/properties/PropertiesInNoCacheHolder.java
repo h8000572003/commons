@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.cache.CacheLoader;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -35,7 +35,7 @@ public class PropertiesInNoCacheHolder implements IPropertieServiceHolder {
 		try {
 			return cacheLoader.load(category);
 		} catch (Exception e) {
-			throw new ApBusinessExecpetion("CATEGORY:{0} 參數錯誤", category);
+			throw new ApBusinessException("CATEGORY:{0} 參數錯誤", category);
 		}
 	}
 
@@ -54,7 +54,7 @@ public class PropertiesInNoCacheHolder implements IPropertieServiceHolder {
 	@Override
 	public void saveOrUpdate(IProperties properties) {
 		if (StringUtils.isBlank(properties.getKey())) {
-			throw new ApBusinessExecpetion("{0} KEY不得為空值", properties.getKey());
+			throw new ApBusinessException("{0} KEY不得為空值", properties.getKey());
 		}
 		final Optional<IProperties> value = this.propertiesRepository.getValue(this.category, properties.getKey());
 		if (value.isPresent()) {

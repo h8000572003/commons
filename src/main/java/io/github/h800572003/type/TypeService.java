@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import com.google.common.collect.Maps;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 
 public class TypeService<I extends ITypeContext> {
 
@@ -37,7 +37,7 @@ public class TypeService<I extends ITypeContext> {
 
 		@Override
 		public Function<I, ?> none(Object typeServiceKey) {
-			throw new ApBusinessExecpetion("未定義該狀態:");
+			throw new ApBusinessException("未定義該狀態:");
 		}
 
 	}
@@ -60,7 +60,7 @@ public class TypeService<I extends ITypeContext> {
 	public void register(String status, Function<I, ?> function) {
 		TypeKey typeKey = TypeKey.create(status);
 		if (this.map.containsKey(typeKey)) {
-			throw new ApBusinessExecpetion("已重複註冊{0}", status);
+			throw new ApBusinessException("已重複註冊{0}", status);
 		}
 		this.map.put(typeKey, function);
 	}

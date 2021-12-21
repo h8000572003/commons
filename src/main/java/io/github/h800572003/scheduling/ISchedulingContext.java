@@ -2,7 +2,7 @@ package io.github.h800572003.scheduling;
 
 import java.util.List;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.scheduling.SpringSchedulingManager.ISpringSchedulingProperites;
 
 public interface ISchedulingContext {
@@ -29,7 +29,7 @@ public interface ISchedulingContext {
 		if (isExecuter()) {
 			runnable.run();
 		} else {
-			throw new ApBusinessExecpetion("非執行者{0}無權限操作", this.getHostName());
+			throw new ApBusinessException("非執行者{0}無權限操作", this.getHostName());
 		}
 	}
 
@@ -43,7 +43,7 @@ public interface ISchedulingContext {
 		if (!isExecuter()) {
 			runnable.run();
 		} else {
-			throw new ApBusinessExecpetion("執行者{0}不提供該操作", this.getHostName());
+			throw new ApBusinessException("執行者{0}不提供該操作", this.getHostName());
 		}
 	}
 

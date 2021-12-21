@@ -2,7 +2,7 @@ package io.github.h800572003.exception;
 
 import java.text.MessageFormat;
 
-public class ApBusinessExecpetion extends RuntimeException {
+public class ApBusinessException extends RuntimeException {
 
 	// ================================================
 	// == [Enumeration constants] Block Start
@@ -21,7 +21,7 @@ public class ApBusinessExecpetion extends RuntimeException {
 	// == [instance variables] Block Stop
 	// ================================================
 	// == [static Constructor] Block Start
-	public ApBusinessExecpetion(String pattern, Object... arguments) {
+	public ApBusinessException(String pattern, Object... arguments) {
 		super(MessageFormat.format(pattern, arguments));
 	}
 
@@ -29,7 +29,7 @@ public class ApBusinessExecpetion extends RuntimeException {
 	// super(string);
 	// }
 
-	public ApBusinessExecpetion(String string, Throwable throwable) {
+	public ApBusinessException(String string, Throwable throwable) {
 		super(string, throwable);
 	}
 	// == [static Constructor] Block Stop

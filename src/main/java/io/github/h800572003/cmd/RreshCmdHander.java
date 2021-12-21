@@ -2,7 +2,7 @@ package io.github.h800572003.cmd;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.scheduling.ISchedulingManager;
 
 /**
@@ -24,7 +24,7 @@ public class RreshCmdHander extends BaseCmdHander implements ICmdHander {
 	@Override
 	public String cmd(String action) {
 		if (StringUtils.isBlank(action)) {
-			throw new ApBusinessExecpetion("不提供全部更新{0}", action);
+			throw new ApBusinessException("不提供全部更新{0}", action);
 		} else {
 			this.schedulingManager.refresh(action);
 		}

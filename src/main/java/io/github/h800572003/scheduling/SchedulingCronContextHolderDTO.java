@@ -9,7 +9,7 @@ import org.springframework.core.task.TaskRejectedException;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.scheduling.SpringSchedulingManager.ISpringSchedulingProperites;
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,10 +56,10 @@ public class SchedulingCronContextHolderDTO extends AbstractSchedulingCronContex
 								}
 								this.status = SchedulingStatusCodes.RUNNABLE;
 							} catch (final TaskRejectedException e) {
-								throw new ApBusinessExecpetion("已關機不提供作業新增{0}", this.scheduingKey.getCode());
+								throw new ApBusinessException("已關機不提供作業新增{0}", this.scheduingKey.getCode());
 							}
 						} else {
-							throw new ApBusinessExecpetion("{0}已啟動，請先關閉", this.scheduingKey.getCode());
+							throw new ApBusinessException("{0}已啟動，請先關閉", this.scheduingKey.getCode());
 						}
 					}
 				});
@@ -79,7 +79,7 @@ public class SchedulingCronContextHolderDTO extends AbstractSchedulingCronContex
 	public void myRefresh() {
 		synchronized (this) {
 			if (this.scheduledFuture != null) {
-				throw new ApBusinessExecpetion("{0}已啟動，請先關閉", this.scheduingKey.getCode());
+				throw new ApBusinessException("{0}已啟動，請先關閉", this.scheduingKey.getCode());
 			}
 			this.scheduingCron = this.schedulingRepository.getCcheduingCronsTask(this.scheduingCron.getCode());
 			log.info("服務更新成功{}", this.scheduingKey.getCode());

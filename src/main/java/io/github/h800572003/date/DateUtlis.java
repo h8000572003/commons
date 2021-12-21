@@ -9,7 +9,7 @@ import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 
 public class DateUtlis {
 	final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
@@ -53,7 +53,7 @@ public class DateUtlis {
 			final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
 			return simpleDateFormat.parse(yyyymmdd);
 		} catch (final ParseException var2) {
-			throw new ApBusinessExecpetion("日期格式錯誤:" + yyyymmdd);
+			throw new ApBusinessException("日期格式錯誤:" + yyyymmdd);
 		}
 	}
 

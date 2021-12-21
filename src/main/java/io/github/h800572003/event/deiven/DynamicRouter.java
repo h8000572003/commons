@@ -4,8 +4,8 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
-import lombok.extern.apachecommons.CommonsLog;
+import io.github.h800572003.exception.ApBusinessException;
+
 public class DynamicRouter implements IDynamicRouter<IMessage> {
 
 	@SuppressWarnings("rawtypes")
@@ -23,10 +23,9 @@ public class DynamicRouter implements IDynamicRouter<IMessage> {
 		if (this.map.containsKey(message.getClass())) {
 			this.map.get(message.getClass()).dispatch(message);
 		} else {
-			throw new ApBusinessExecpetion("not match channel:{0}", message);
+			throw new ApBusinessException("not match channel:{0}", message);
 		}
 
 	}
-
 
 }

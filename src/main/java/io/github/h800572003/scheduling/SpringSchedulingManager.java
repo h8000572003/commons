@@ -12,7 +12,7 @@ import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.scheduling.SpringSchedulingManager.SpringSchedulingHook.BalankSpringSchedulingHook;
 import io.github.h800572003.utils.HostNameUtls;
 import lombok.AccessLevel;
@@ -138,7 +138,7 @@ public class SpringSchedulingManager implements ISchedulingManager {
 
 	public void add(IScheduingCron code) {
 		if (this.map.containsKey(code.getCode())) {
-			throw new ApBusinessExecpetion("任務代碼重複{0}", code.getCode());
+			throw new ApBusinessException("任務代碼重複{0}", code.getCode());
 		}
 		log.info("add task:{} name:{} cron:({})", code.getCode(), code.getName(), code.getCon());
 		this.add(code, new SchedulingCronContextHolderDTO(code, scheduler, applicationContext.getBean(code.getPClass()),
@@ -151,7 +151,7 @@ public class SpringSchedulingManager implements ISchedulingManager {
 
 	public void add(IScheduingDelay code) {
 		if (this.map.containsKey(code.getCode())) {
-			throw new ApBusinessExecpetion("任務代碼重複{0}", code.getCode());
+			throw new ApBusinessException("任務代碼重複{0}", code.getCode());
 		}
 		log.info("add task:{} name:{} cron:({})", code.getCode(), code.getName(), code.getCron());
 		this.add(code, new SchedulingDelayContextHolderDTO(code, scheduler,
@@ -238,14 +238,14 @@ public class SpringSchedulingManager implements ISchedulingManager {
 				this.lock = true;
 				if (this.taskRegistrar == null) {
 					log.info("服務已關閉");
-					throw new ApBusinessExecpetion("服務已關閉");
+					throw new ApBusinessException("服務已關閉");
 				}
 
 				this.map.values().forEach(item -> item.cancel());// 通知關閉
 				this.map.values().forEach(item -> {
 					try {
 						item.destroy();
-					} catch (final ApBusinessExecpetion e) {
+					} catch (final ApBusinessException e) {
 						log.error("強制關閉忽略警告 error:", e);
 					}
 
@@ -293,11 +293,11 @@ public class SpringSchedulingManager implements ISchedulingManager {
 			try {
 				if (this.taskRegistrar != null) {
 					log.info("服務已啟動");
-					throw new ApBusinessExecpetion("服務已啟動");
+					throw new ApBusinessException("服務已啟動");
 				}
 				long count = this.threads.stream().filter(Thread::isAlive).count();
 				if (count > 0) {
-					throw new ApBusinessExecpetion("任務尚未完全停止，請稍後");
+					throw new ApBusinessException("任務尚未完全停止，請稍後");
 				}
 				this.taskRegistrar = new ScheduledTaskRegistrar();
 				this.init();
@@ -313,7 +313,7 @@ public class SpringSchedulingManager implements ISchedulingManager {
 	private void busy() {
 		synchronized (lockKey) {
 			if (this.lock) {
-				throw new ApBusinessExecpetion("服務忙碌中請稍後操作");
+				throw new ApBusinessException("服務忙碌中請稍後操作");
 			}
 		}
 	}
@@ -321,7 +321,7 @@ public class SpringSchedulingManager implements ISchedulingManager {
 	private ISchedulingItemContext init(String code) {
 		final ISchedulingItemContext orDefault = this.map.getOrDefault(code, null);
 		if (orDefault == null) {
-			throw new ApBusinessExecpetion("任務不存在{0}", code);
+			throw new ApBusinessException("任務不存在{0}", code);
 		}
 		return orDefault;
 	}

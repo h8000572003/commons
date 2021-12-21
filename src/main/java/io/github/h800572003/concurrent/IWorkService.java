@@ -1,5 +1,7 @@
 package io.github.h800572003.concurrent;
 
+import java.util.List;
+
 /**
  * 工人服務
  * 
@@ -8,13 +10,6 @@ package io.github.h800572003.concurrent;
  * @param <T>
  */
 public interface IWorkService<T> {
-
-	/**
-	 * 加入案例
-	 * 
-	 * @param item
-	 */
-	void addItem(T item);
 
 	/**
 	 * 關閉服務
@@ -26,6 +21,13 @@ public interface IWorkService<T> {
 	 * 
 	 * @throws InterruptedException
 	 */
-	void execute() throws InterruptedException;
+	void execute(IQueue<T> queue, List<? extends T> items) throws InterruptedException;
+
+	/**
+	 * 啟動
+	 * 
+	 * @throws InterruptedException
+	 */
+	void execute(List<? extends T> items) throws InterruptedException;
 
 }

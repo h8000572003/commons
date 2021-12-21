@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import org.junit.jupiter.api.Test;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 
 public class TypeServiceTest {
 
@@ -62,7 +62,7 @@ public class TypeServiceTest {
 		TypeService<DTO> createService = TypeService.createService();
 		DTO dto = new DTO("NONE_TYPE");
 
-		assertThatExceptionOfType(ApBusinessExecpetion.class).isThrownBy(() -> {
+		assertThatExceptionOfType(ApBusinessException.class).isThrownBy(() -> {
 			createService.dispatch(dto);
 		}).withMessageContaining("未定義該狀態");
 

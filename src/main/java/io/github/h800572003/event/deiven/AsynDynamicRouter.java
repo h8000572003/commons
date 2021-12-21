@@ -9,9 +9,7 @@ import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import com.google.common.collect.Maps;
 
 import io.github.h800572003.countdown.CountDown;
-import io.github.h800572003.exception.ApBusinessExecpetion;
-import io.github.h800572003.exception.CancelExecpetion;
-import io.github.h800572003.scheduling.SpringSchedulingManager;
+import io.github.h800572003.exception.ApBusinessException;
 
 public class AsynDynamicRouter implements IMultDynamicRouter<IMessage>, AutoCloseable {
 
@@ -53,7 +51,7 @@ public class AsynDynamicRouter implements IMultDynamicRouter<IMessage>, AutoClos
 
 			});
 		} else {
-			throw new ApBusinessExecpetion("not match channel:{0}", message);
+			throw new ApBusinessException("not match channel:{0}", message);
 		}
 	}
 

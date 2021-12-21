@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,7 +31,7 @@ public class PropertiesService implements IPropertiesService {
 
 	public void addCode(String code, String name, IPropertieServiceHolder holder) {
 		if (this.map.containsKey(code)) {
-			throw new ApBusinessExecpetion("重複代碼{0}", code);
+			throw new ApBusinessException("重複代碼{0}", code);
 		}
 		this.map.put(code, holder);
 		final Code myCode = new Code();

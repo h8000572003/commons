@@ -2,7 +2,7 @@ package io.github.h800572003.cmd;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.properties.IPropertiesService;
 import io.github.h800572003.properties.MyProperties;
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +21,12 @@ public class UpPropHandler extends BaseCmdHander implements ICmdHander {
 	public String cmd(String action) {
 
 		if (StringUtils.isBlank(action)) {
-			throw new ApBusinessExecpetion("參數錯誤:{0}", action);
+			throw new ApBusinessException("參數錯誤:{0}", action);
 		}
 
 		String[] split = StringUtils.split(action, ",");
 		if (split.length != 5) {
-			throw new ApBusinessExecpetion("參數數量{0}錯誤", split.length);
+			throw new ApBusinessException("參數數量{0}錯誤", split.length);
 		}
 
 		final String category = split[0];

@@ -2,7 +2,7 @@ package io.github.h800572003.cmd;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.properties.IPropertiesService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,13 +20,13 @@ public class DeletePropHandler extends BaseCmdHander implements ICmdHander {
 	public String cmd(String action) {
 
 		if (StringUtils.isBlank(action)) {
-			throw new ApBusinessExecpetion("不提供作業");
+			throw new ApBusinessException("不提供作業");
 		}
 
 		log.info("category:{}", action);
 		String[] split = StringUtils.split(action, ",");
 		if (split.length != 2) {
-			throw new ApBusinessExecpetion("參數數量{0}錯誤", split.length);
+			throw new ApBusinessException("參數數量{0}錯誤", split.length);
 		}
 		final String category = split[0];
 		final String key = split[1];

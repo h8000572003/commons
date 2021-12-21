@@ -8,7 +8,7 @@ import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.properties.IPropertiesService;
 import io.github.h800572003.scheduling.ISchedulingManager;
 
@@ -36,7 +36,7 @@ class CmdServiceTest {
 	 */
 	@Test
 	void cmdUnkownCommadWithException() {
-		assertThatExceptionOfType(ApBusinessExecpetion.class).isThrownBy(() -> {
+		assertThatExceptionOfType(ApBusinessException.class).isThrownBy(() -> {
 			this.cmdService.execute("UNKOWN", "");
 		}).withMessageContaining("無定義");
 	}
@@ -55,7 +55,7 @@ class CmdServiceTest {
 	 */
 	@Test
 	void cmdClearWithoutParmatersWithExceptoin() {
-		assertThatExceptionOfType(ApBusinessExecpetion.class).isThrownBy(() -> {
+		assertThatExceptionOfType(ApBusinessException.class).isThrownBy(() -> {
 			this.cmdService.execute(CmdCodesCofing.Codes.CLEAR.name(), "");
 		}).withMessageContaining("不提供");
 
@@ -69,7 +69,7 @@ class CmdServiceTest {
 
 	@Test
 	void cmddelteWithoutParmatersWithExceptoin() {
-		assertThatExceptionOfType(ApBusinessExecpetion.class).isThrownBy(() -> {
+		assertThatExceptionOfType(ApBusinessException.class).isThrownBy(() -> {
 			this.cmdService.execute(CmdCodesCofing.Codes.DEPRO.name(), "");
 		}).withMessageContaining("不提供");
 	}

@@ -8,7 +8,7 @@ import org.springframework.core.task.TaskRejectedException;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.scheduling.SpringSchedulingManager.ISpringSchedulingProperites;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,12 +51,12 @@ public class SchedulingDelayContextHolderDTO extends AbstractSchedulingCronConte
 								this.status = SchedulingStatusCodes.RUNNABLE;
 								log.info("服務啟動成功{}", this.scheduingKey.getCode());
 							} catch (final TaskRejectedException e) {
-								throw new ApBusinessExecpetion("已關機不提供作業新增{0}", this.scheduingKey.getCode());
+								throw new ApBusinessException("已關機不提供作業新增{0}", this.scheduingKey.getCode());
 
 							}
 
 						} else {
-							throw new ApBusinessExecpetion("{0}已啟動，請先關閉", this.scheduingKey.getCode());
+							throw new ApBusinessException("{0}已啟動，請先關閉", this.scheduingKey.getCode());
 						}
 					}
 				});
@@ -75,7 +75,7 @@ public class SchedulingDelayContextHolderDTO extends AbstractSchedulingCronConte
 	@Override
 	public void myRefresh() {
 		if (this.scheduledFuture != null) {
-			throw new ApBusinessExecpetion("{0}已啟動，請先關閉", this.scheduingKey.getCode());
+			throw new ApBusinessException("{0}已啟動，請先關閉", this.scheduingKey.getCode());
 		}
 		this.medidata = this.schedulingRepository.getCcheduingDelayTask(this.medidata.getCode());
 		log.info("服務更新成功{}", this.scheduingKey.getCode());

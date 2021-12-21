@@ -6,7 +6,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.exception.CancelExecpetion;
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,11 +75,11 @@ public class BactchTaskHolder implements IBactchTaskHolder, IBactchTaskExecuterC
 					log.info("down code{} end", config.getCode());
 				}
 			} else {
-				throw new ApBusinessExecpetion("batch " + config.getCode() + "停止中");
+				throw new ApBusinessException("batch " + config.getCode() + "停止中");
 			}
 
 		} else {
-			throw new ApBusinessExecpetion("batch " + config.getCode() + "未執行");
+			throw new ApBusinessException("batch " + config.getCode() + "未執行");
 		}
 
 	}

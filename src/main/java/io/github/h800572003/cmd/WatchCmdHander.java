@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.scheduling.ISchedulingContext;
 import io.github.h800572003.scheduling.ISchedulingManager;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +33,7 @@ public class WatchCmdHander extends BaseCmdHander implements ICmdHander {
 	@Override
 	public String cmd(String action) {
 		if (StringUtils.isNotBlank(action)) {
-			throw new ApBusinessExecpetion("無提供此命命:{0}", action);
+			throw new ApBusinessException("無提供此命命:{0}", action);
 		}
 		ISchedulingContext context = this.schedulingManager.getContext();
 		try {

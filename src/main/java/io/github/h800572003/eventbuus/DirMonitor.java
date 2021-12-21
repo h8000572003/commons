@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -37,7 +37,7 @@ public class DirMonitor implements IDirMonitor {
 	@Override
 	public void startMonitor(WatchEvent.Kind<?>... events) throws IOException {
 		if (this.service != null) {
-			throw new ApBusinessExecpetion("服務已啟動");
+			throw new ApBusinessException("服務已啟動");
 		}
 		addEventList(events);
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {

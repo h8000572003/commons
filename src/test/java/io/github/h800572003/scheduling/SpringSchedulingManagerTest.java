@@ -18,7 +18,7 @@ import org.springframework.context.ApplicationContext;
 
 import io.github.chungtsai.cmd.TestCmdService;
 import io.github.chungtsai.cmd.TestCmdService.CmdRunnable;
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.scheduling.SpringSchedulingManager.ISpringSchedulingProperites;
 import lombok.extern.slf4j.Slf4j;
 
@@ -207,7 +207,7 @@ class SpringSchedulingManagerTest {
 	// @Timeout(unit = TimeUnit.SECONDS, value = 15)
 	void testOnRresh() {
 
-		assertThatExceptionOfType(ApBusinessExecpetion.class).isThrownBy(() -> {
+		assertThatExceptionOfType(ApBusinessException.class).isThrownBy(() -> {
 			this.springSchedulingManager.refresh(Sample.class.getSimpleName());
 		}).withMessageContaining("請先關閉");
 		// assertThat(springSchedulingManager.getContext().getRunningCount()).isEqualTo(2);

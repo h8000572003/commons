@@ -5,7 +5,7 @@ import java.util.concurrent.Executors;
 
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 
 public class EventBus implements IBus {
 
@@ -17,12 +17,12 @@ public class EventBus implements IBus {
 
 		@Override
 		public void handle(String message) {
-			throw new ApBusinessExecpetion(message);
+			throw new ApBusinessException(message);
 		}
 
 		@Override
 		public void handle(String message, Exception e) {
-			throw new ApBusinessExecpetion(message, e);
+			throw new ApBusinessException(message, e);
 		}
 
 	}

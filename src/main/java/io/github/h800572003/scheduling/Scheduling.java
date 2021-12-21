@@ -2,7 +2,7 @@ package io.github.h800572003.scheduling;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 import lombok.Data;
 
 @Data
@@ -16,7 +16,7 @@ public class Scheduling {
 
 	public SchedulinChangedEvent change(SchuduingChangeInputDTO schuduingChangeInputDTO) {
 		if (StringUtils.isBlank(schuduingChangeInputDTO.getCron())) {
-			throw new ApBusinessExecpetion("排程時間不得空白");
+			throw new ApBusinessException("排程時間不得空白");
 		}
 //		if (StringUtils.isBlank(schuduingChangeInputDTO.getName())) {
 //			throw new ApBusinessExecpetion("名稱不得空白");

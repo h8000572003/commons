@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Maps;
 
-import io.github.h800572003.exception.ApBusinessExecpetion;
+import io.github.h800572003.exception.ApBusinessException;
 
 /**
  * 命令實作
@@ -21,11 +21,11 @@ public class CmdService implements ICmdService {
 	@Override
 	public String execute(String cmd, String value) {
 		if (StringUtils.isBlank(cmd)) {
-			throw new ApBusinessExecpetion("請輸入命令");
+			throw new ApBusinessException("請輸入命令");
 		}
 		String key = StringUtils.substringBefore(cmd, "_");
 		if (!map.containsKey(key)) {
-			throw new ApBusinessExecpetion("該{0}無定義", key);
+			throw new ApBusinessException("該{0}無定義", key);
 		}
 		return this.executeCmd(cmd, value);
 	}
