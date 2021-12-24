@@ -8,6 +8,10 @@ package io.github.h800572003.concurrent;
  * @param <T>
  */
 public interface IQueue<T> {
+	/**
+	 * 通過移除柱列
+	 * @param src
+	 */
 	void remove(T src);
 
 	/**
