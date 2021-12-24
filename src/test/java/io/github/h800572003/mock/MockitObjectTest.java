@@ -15,11 +15,13 @@ class MockitObjectTest {
 		AppleVoDTO appleVoDTO = new AppleVoDTO();
 		MockitObject mockitObject = new MockitObject();
 		mockitObject.registerName("name", () -> "tome");
+		mockitObject.exclude("appleVo");
 		AppleVoDTO random = (AppleVoDTO) mockitObject.random(appleVoDTO);
 		log.info("{}", random);
 
 		assertThat(random.getName()).isEqualTo("tome");
 		assertThat(random.getName1()).isNotEmpty();
+		assertThat(random.getAppleVo()).isNull();
 	}
 
 }
