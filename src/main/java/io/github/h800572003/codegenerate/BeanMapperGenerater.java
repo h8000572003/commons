@@ -18,8 +18,9 @@ public class BeanMapperGenerater {
 		final String clsseNmae = target.getSimpleName();
 		final String objectName = StringUtils.uncapitalize(clsseNmae);
 
-		line.add(String.format("public %s to(%s %s) {",clsseNmae,source.getSimpleName(),StringUtils.uncapitalize(source.getSimpleName())));
-		line.add(String.format("    if ( %s == null ) {",StringUtils.uncapitalize(source.getSimpleName())));
+		line.add(String.format("public %s to(%s %s) {", clsseNmae, source.getSimpleName(),
+				StringUtils.uncapitalize(source.getSimpleName())));
+		line.add(String.format("    if ( %s == null ) {", StringUtils.uncapitalize(source.getSimpleName())));
 		line.add(String.format("        return null;"));
 		line.add(String.format("    }"));
 		line.add(String.format(""));
@@ -33,11 +34,13 @@ public class BeanMapperGenerater {
 						StringUtils.uncapitalize(source.getSimpleName()), setName.replace("set", "get")));
 			}
 		}
-		line.add(String.format("    return %s;",objectName));
+		line.add(String.format("    return %s;", objectName));
 		line.add(String.format("}"));
 		String collect = line.stream().collect(Collectors.joining("\n"));
 		System.out.print(collect);
 		return collect;
 	}
 
+
+	
 }
