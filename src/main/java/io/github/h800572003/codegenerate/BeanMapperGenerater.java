@@ -11,14 +11,11 @@ import com.google.common.collect.Lists;
 
 public class BeanMapperGenerater {
 
-	public String generate(Object source, Object target) {
-		Assert.notNull(source, "Source must not be null");
-		Assert.notNull(target, "Target must not be null");
+	public String generate(Class<?> source, Class<?> target) {
 
-		Class<? extends Object> tt = target.getClass();
 		List<String> line = Lists.newArrayList();
-		Method[] methods = tt.getMethods();
-		final String clsseNmae = tt.getSimpleName();
+		Method[] methods = target.getMethods();
+		final String clsseNmae = target.getSimpleName();
 		final String objectName = StringUtils.uncapitalize(clsseNmae);
 		line.add(String.format("%s %s = new %s();", clsseNmae, objectName, clsseNmae));
 		for (Method mm : methods) {
@@ -26,7 +23,7 @@ public class BeanMapperGenerater {
 
 			if (startsWith) {
 				String setName = mm.getName();
-				line.add(String.format("%s.%s(source.%s());", objectName, mm.getName(), setName.replace("set", "get")));
+				line.add(String.format("%s.%s(%s.%s());", objectName, mm.getName(),StringUtils.uncapitalize(source.getSimpleName()), setName.replace("set", "get")));
 			}
 		}
 		String collect = line.stream().collect(Collectors.joining("\n"));

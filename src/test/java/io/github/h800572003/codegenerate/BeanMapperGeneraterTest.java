@@ -6,11 +6,15 @@ class BeanMapperGeneraterTest {
 
 	@Test
 	void test() {
-		AppleVoDTO dto = new AppleVoDTO();
-		AppleVo vo = new AppleVo();
+		
 
 		BeanMapperGenerater beanGenerater = new BeanMapperGenerater();
-		beanGenerater.generate(vo, dto);
+		beanGenerater.generate(AppleVoDTO.class,AppleVo.class);
+		
+		
+		AppleVoDTO appleVoDTO = new AppleVoDTO();
+		AppleVo appleVo = new AppleVo();
+		appleVo.setName(appleVoDTO.getName());
 	}
 
 }
