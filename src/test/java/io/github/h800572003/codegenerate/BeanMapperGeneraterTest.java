@@ -8,14 +8,12 @@ class BeanMapperGeneraterTest {
 	void test() {
 
 		BeanMapperGenerater beanGenerater = new BeanMapperGenerater();
-		beanGenerater.generate(AppleVoDTO.class, AppleVo.class);
+		beanGenerater.generate(AppleVo.class, AppleVoDTO.class);
 
 		AppleVoDTO appleVoDTO = new AppleVoDTO();
 		AppleVo appleVo = new AppleVo();
 		appleVo.setName(appleVoDTO.getName());
-		
-		
-	}
 
+	}
 
 }

@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 
 public class CodeGenerater {
 
-	private Supplier<List<String>> supplier;
+	private final Supplier<List<String>> supplier;
 
 	public CodeGenerater(Supplier<List<String>> supplier) {
 		super();
@@ -15,7 +15,7 @@ public class CodeGenerater {
 	}
 
 	public void write(OutputStream outputStream) throws IOException {
-		for (String line : this.supplier.get()) {
+		for (final String line : this.supplier.get()) {
 			outputStream.write((line + "\n").getBytes());
 		}
 	}
