@@ -1,47 +1,61 @@
 package io.github.h800572003.codegenerate;
 
+import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;
 
 public class AassertThatGeneratrer {
-	public String generateAssertThat(Class<?> excep, Class<?> source) {
-		List<String> line = Lists.newArrayList();
-		Method[] methods = excep.getMethods();
-		final String clsseNmae = excep.getSimpleName();
-		final String objectName = StringUtils.uncapitalize(clsseNmae);
-		for (Method mm : methods) {
-			boolean startsWith = mm.getName().startsWith("get");
-			if (startsWith) {
-				String methodName = mm.getName();
-				line.add(String.format("assertThat(%s.%s()).isEqualTo(%s.%s()); ", objectName, methodName,
-						StringUtils.uncapitalize(source.getSimpleName()), methodName));
-			}
+	public void generateAssertThat(Class<?> excep, Class<?> source) {
+		try (PrintStream out = System.out) {
+			new CodeGenerater(new Holder(excep, source)::getLines).write(out);
+		} catch (IOException e) {
+			System.out.print("產製錯誤" + e.getMessage());
 		}
-		String collect = line.stream().collect(Collectors.joining("\n"));
-		System.out.print(collect);
-		return collect;
 	}
 
-	public String generateAssertThat(Class<?> source) {
-		List<String> line = Lists.newArrayList();
-		Method[] methods = source.getMethods();
-		final String clsseNmae = source.getSimpleName();
-		final String objectName = StringUtils.uncapitalize(clsseNmae);
-		for (Method mm : methods) {
-			boolean startsWith = mm.getName().startsWith("get");
-			if (startsWith) {
-				String methodName = mm.getName();
-				line.add(String.format("assertThat(%s.%s()).isEqualTo(-); ", objectName, methodName));
-			}
+	
+	public void generateAssertThat(Class<?> source) {
+		try (PrintStream out = System.out) {
+			new CodeGenerater(new Holder(source, null)::getLines).write(out);
+		} catch (IOException e) {
+			System.out.print("產製錯誤" + e.getMessage());
 		}
-		String collect = line.stream().collect(Collectors.joining("\n"));
-		System.out.print(collect);
-		return collect;
+	}
+	class Holder {
+		Class<?> excep;
+		Class<?> source;
+
+		public Holder(Class<?> excep, Class<?> source) {
+			super();
+			this.excep = excep;
+			this.source = source;
+		}
+
+		public List<String> getLines() {
+			List<String> line = Lists.newArrayList();
+			Method[] methods = excep.getMethods();
+			final String clsseNmae = excep.getSimpleName();
+			final String objectName = StringUtils.uncapitalize(clsseNmae);
+			for (Method mm : methods) {
+				boolean startsWith = mm.getName().startsWith("get");
+				if (startsWith) {
+					String methodName = mm.getName();
+					if (this.source == null) {
+						line.add(String.format("assertThat(%s.%s()).isEqualTo(-); ", objectName, methodName));
+					} else {
+						line.add(String.format("assertThat(%s.%s()).isEqualTo(%s.%s()); ", objectName, methodName,
+								StringUtils.uncapitalize(source.getSimpleName()), methodName));
+					}
+				}
+			}
+			return line;
+		}
+
 	}
 
 }
