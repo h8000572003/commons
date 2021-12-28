@@ -8,7 +8,7 @@ package io.github.h800572003.codegenerate;
  */
 public class ImportCodegen {
 
-	String name;
+	private String name;
 
 	public ImportCodegen(String name) {
 		super();

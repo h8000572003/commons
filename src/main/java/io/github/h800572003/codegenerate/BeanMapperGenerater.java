@@ -13,7 +13,7 @@ public class BeanMapperGenerater {
 
 	public void generate(Class<?> source, Class<?> target) {
 		try (PrintStream out = System.out) {
-			new CodeGenerater(new Holder(source, source)::getLines).write(out);
+			new CodeGenerater(new Holder(source, target)::getLines).write(out);
 		} catch (IOException e) {
 			System.out.print("產製錯誤" + e.getMessage());
 		}

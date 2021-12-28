@@ -23,14 +23,12 @@ public class DirMonitor implements IDirMonitor {
 	private WatchService service;
 	private final IBus eventBus;
 	private final Path path;
-	private volatile boolean start = false;
+	private volatile boolean start = true;
 	List<WatchEvent.Kind<?>> eventsList = Lists.newArrayList();
 
-	public DirMonitor(IBus eventBus, String targe, String... morePath) {
-		super();
+	public DirMonitor(IBus eventBus, String targe) {
 		this.eventBus = eventBus;
-		this.start = this.start;
-		this.path = Paths.get(targe, morePath);
+		this.path = Paths.get(targe);
 
 	}
 
@@ -52,8 +50,7 @@ public class DirMonitor implements IDirMonitor {
 
 		this.service = FileSystems.getDefault().newWatchService();
 		this.path.register(this.service, this.eventsList.toArray(new WatchEvent.Kind<?>[this.eventsList.size()]));
-		this.start = true;
-		while (this.start) {
+		while (!Thread.currentThread().isInterrupted()) {
 
 			try {
 				final WatchKey take = this.service.take();
@@ -65,6 +62,9 @@ public class DirMonitor implements IDirMonitor {
 					final Path resolve = this.path.resolve(path);
 					this.eventBus.post(new FileChangeEvent(resolve, kind));
 				});
+				if (!take.reset()) {
+					log.info("exit watch server");
+				}
 			} catch (final InterruptedException e1) {
 				this.start = false;
 				log.info("中斷作業");

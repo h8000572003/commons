@@ -1,26 +1,31 @@
 package io.github.h800572003.eventbuus;
 
-import java.io.FileWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import io.github.chungtsai.cmd.TestCmdService;
+import io.github.chungtsai.cmd.TestCmdService.CmdRunnable;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Disabled
+// @Disabled
 class DirMonitorTest {
 
 	FileChangeEventSubscribe fileChangeEventSubscribe = new FileChangeEventSubscribe();
 
 	@Test
-	void test() {
+	void test() throws InterruptedException {
 		IBus bus = new EventBus("myBus");
 		bus.register(fileChangeEventSubscribe);
-		IDirMonitor dirMonitor = new DirMonitor(bus, "/EHU2", "");
+		IDirMonitor dirMonitor = new DirMonitor(bus, "/PIMCT/PEDIFIL/RISK");
 
 		Thread thread = new Thread() {
 			public void run() {
@@ -33,36 +38,37 @@ class DirMonitorTest {
 			};
 		};
 		thread.start();
-		log.info("start..");
-		try {
-			TimeUnit.SECONDS.sleep(2);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		Paths.get("/EHU2", "1212.txt").toFile().delete();
-		try (FileWriter writer = new FileWriter(Paths.get("/EHU2", "1212.txt").toFile())) {
-			writer.write("ok");
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		log.info("create file..");
 
-		try {
-			TimeUnit.SECONDS.sleep(2);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		log.info("interrupt");
-		thread.interrupt();
-		try {
-			TimeUnit.SECONDS.sleep(30);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		TestCmdService testCmdService = TestCmdService.create();
+
+		testCmdService.addCacheRepeat(new CmdRunnable("writeA", () -> {
+			try {
+				writeFile();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}), 1);
+		testCmdService.startJoin();
+
+
 	}
+	public void writeFile() throws InterruptedException {
+		for (int i = 0; i < 100; i++) {
+			File file = new File("/PIMCT/PEDIFIL/RISK/" + i + ".log");
+			String name = new Date() + ":" + Thread.currentThread().getName() + "\n";
+			try (FileOutputStream is = new FileOutputStream(file, true)) {
+//				try (FileChannel channel = is.getChannel()) {
+//					try (FileLock lock = channel.lock()) {
+						log.info("write");
+						TimeUnit.SECONDS.sleep(10);
+						is.write(name.getBytes());
+//					}
+//				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}}
 
 }
