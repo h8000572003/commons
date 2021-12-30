@@ -3,7 +3,7 @@ package io.github.h800572003.concurrent;
 /**
  * 堵篩KeyQueue
  * 
- * @author 6407
+ * @author andy tsai
  *
  * @param <T>
  */

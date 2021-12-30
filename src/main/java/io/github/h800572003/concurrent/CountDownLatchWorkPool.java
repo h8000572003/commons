@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 倒數工作池[任務完成關閉作業]
  * 
- * @author 6407
+ * @author andy tsai
  *
  * @param <T>
  */

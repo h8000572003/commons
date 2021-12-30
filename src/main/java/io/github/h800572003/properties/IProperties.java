@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public interface IProperties {

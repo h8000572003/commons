@@ -3,7 +3,7 @@ package io.github.h800572003.codegenerate;
 /**
  * import產生
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public class ImportCodegen {

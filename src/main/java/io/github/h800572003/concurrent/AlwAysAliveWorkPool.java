@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 工人保持存活池
  * 
- * @author 6407
+ * @author andy tsai
  *
  * @param <T>
  */

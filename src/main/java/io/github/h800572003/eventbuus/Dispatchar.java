@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorService;
 /**
  * 指派
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public class Dispatchar {

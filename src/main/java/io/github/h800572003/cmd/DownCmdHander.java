@@ -8,7 +8,7 @@ import io.github.h800572003.scheduling.ISchedulingManager;
 /**
  * 服務停止命令
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public class DownCmdHander extends BaseCmdHander implements ICmdHander {

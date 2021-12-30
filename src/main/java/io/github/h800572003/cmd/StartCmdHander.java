@@ -7,7 +7,7 @@ import io.github.h800572003.scheduling.ISchedulingManager;
 /**
  * 啟動命令Handler
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public class StartCmdHander extends BaseCmdHander implements ICmdHander {

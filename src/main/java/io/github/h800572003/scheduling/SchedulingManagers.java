@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationContext;
 import io.github.h800572003.scheduling.SpringSchedulingManager.ISpringSchedulingProperites;
 /**
  * 排程服務集合
- * @author 6407
+ * @author andy tsai
  *
  */
 public class SchedulingManagers {

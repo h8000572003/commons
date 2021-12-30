@@ -8,11 +8,21 @@ import com.google.common.collect.Maps;
 
 import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.machine.StatusActionHolder.NotFoundKeyPolicy;
+import lombok.extern.slf4j.Slf4j;
 
+/**
+ * 狀態機
+ * 
+ * @author andy tsai
+ *
+ * @param <T>
+ * @param <R>
+ */
 public class StatusMachine<T extends IStatus, R> {
 	private Map<String, StatusActionHolder<T, R>> statusMap = Maps.newConcurrentMap();
 	private NotFoundKeyPolicy<T, R> notFoundKeyPolicy;
 
+	
 	public static class ExceptionPolicy<T, R> implements NotFoundKeyPolicy<T, R> {
 
 		@Override
@@ -32,7 +42,7 @@ public class StatusMachine<T extends IStatus, R> {
 
 	public IStatusActionHolder<T, R> getStatusAction(IStatus status) {
 		synchronized (StatusMachine.class) {
-			return statusMap.compute(status.toStatus(), (k, v) -> {
+			return this.statusMap.compute(status.toStatus(), (k, v) -> {
 				return v == null ? new StatusActionHolder<T, R>(this.notFoundKeyPolicy) : v;
 			});
 		}

@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 停止時間長任務
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 @Slf4j

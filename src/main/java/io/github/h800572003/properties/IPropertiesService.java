@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * 代碼
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public interface IPropertiesService {

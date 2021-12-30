@@ -3,7 +3,7 @@ package io.github.h800572003.scheduling;
 /**
  * 排程服務監督程式
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public interface IScheduingMonitor {

@@ -11,7 +11,7 @@ import com.google.common.collect.Lists;
 /**
  * 排序Queue
  * 
- * @author 6407
+ * @author andy tsai
  *
  * @param <T>
  */

@@ -3,7 +3,7 @@ package io.github.h800572003.scheduling;
 /**
  * 排程管理介面
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public interface ISchedulingManager {

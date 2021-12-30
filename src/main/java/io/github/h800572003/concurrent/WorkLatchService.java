@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 門閂工人服務
  * 
- * @author 6407
+ * @author andy tsai
  *
  * @param <T>
  */

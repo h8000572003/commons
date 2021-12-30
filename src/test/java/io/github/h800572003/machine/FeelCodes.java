@@ -3,7 +3,7 @@ package io.github.h800572003.machine;
 /**
  * 心情
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public enum FeelCodes implements IStatus {

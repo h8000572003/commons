@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 /**
  * 方法產生
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 @EqualsAndHashCode(exclude = { "name", "argValues" })

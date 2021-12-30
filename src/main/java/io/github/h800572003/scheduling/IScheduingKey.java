@@ -3,7 +3,7 @@ package io.github.h800572003.scheduling;
 /**
  * 任務KEY
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public interface IScheduingKey {

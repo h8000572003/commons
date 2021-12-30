@@ -3,7 +3,7 @@ package io.github.h800572003.scheduling;
 /**
  * 服務介面
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public interface ISchedulingItemContext {

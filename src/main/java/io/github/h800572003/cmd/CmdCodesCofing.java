@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * 命令定義檔案
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 @Configuration

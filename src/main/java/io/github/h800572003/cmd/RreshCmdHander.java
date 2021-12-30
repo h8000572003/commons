@@ -8,7 +8,7 @@ import io.github.h800572003.scheduling.ISchedulingManager;
 /**
  * 任務更新Handler
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public class RreshCmdHander extends BaseCmdHander implements ICmdHander {

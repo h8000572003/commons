@@ -25,7 +25,7 @@ public interface IErrorService {
 	/**
 	 * 錯誤文件
 	 * 
-	 * @author 6407
+	 * @author andy tsai
 	 *
 	 */
 	static public interface IErrorText {

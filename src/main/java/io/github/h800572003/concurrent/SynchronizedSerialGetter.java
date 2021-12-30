@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * 序號產生非隨機 0~maxSize
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public class SynchronizedSerialGetter implements IValueGetter {

@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 /**
  * 物件栓
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public class ObjectDownLatch {

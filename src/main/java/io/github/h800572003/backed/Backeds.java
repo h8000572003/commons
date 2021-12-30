@@ -3,7 +3,7 @@ package io.github.h800572003.backed;
 /**
  * 排程服務
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public class Backeds {

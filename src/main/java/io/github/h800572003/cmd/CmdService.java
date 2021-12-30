@@ -11,7 +11,7 @@ import io.github.h800572003.exception.ApBusinessException;
 /**
  * 命令實作
  * 
- * @author 6407
+ * @author andy tsai
  *
  */
 public class CmdService implements ICmdService {
