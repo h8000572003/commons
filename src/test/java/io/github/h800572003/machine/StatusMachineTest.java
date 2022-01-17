@@ -50,21 +50,5 @@ class StatusMachineTest {
 		assertThat(nobody.getStatus()).isEqualTo(FeelCodes.SAD.name());
 
 	}
-	/**
-	 * 當nobody 心情好，when_受傷_然後變傷心
-	 */
-	@Test
-	void test_nobody_give_anger_error() {
-
-		// GIVE
-		NoBody nobody = new NoBody("MARK", FeelCodes.ANGER.name());
-
-		// WHEN
-		this.moodbehavior.run(ActionCodes.INJURIED, nobody);
-
-		// THEN
-		assertThat(nobody.getStatus()).isEqualTo(FeelCodes.SAD.name());
-
-	}
 
 }

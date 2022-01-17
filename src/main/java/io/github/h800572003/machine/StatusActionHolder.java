@@ -18,7 +18,8 @@ class StatusActionHolder<T extends IStatus, R> implements IStatusActionHolder<T,
 
 	/**
 	 * 
-	 * @param notFoundKeyPolicy 策略
+	 * @param notFoundKeyPolicy
+	 *            策略
 	 */
 	StatusActionHolder(NotFoundKeyPolicy<T, R> notFoundKeyPolicy) {
 		super();
@@ -27,6 +28,7 @@ class StatusActionHolder<T extends IStatus, R> implements IStatusActionHolder<T,
 
 	/**
 	 * 找不到策略
+	 * 
 	 * @author andy tsai
 	 *
 	 * @param <T>
@@ -49,6 +51,10 @@ class StatusActionHolder<T extends IStatus, R> implements IStatusActionHolder<T,
 	@Override
 	public Function<T, R> getAction(StatusAction statusAction) {
 		Objects.requireNonNull(statusAction);
-		return this.map.getOrDefault(statusAction.toAction(), this.notFoundKeyPolicy.none(statusAction));
+		if (this.map.containsKey(statusAction.toAction())) {
+			return this.map.get(statusAction.toAction());
+		} else {
+			return this.notFoundKeyPolicy.none(statusAction);
+		}
 	}
 }
