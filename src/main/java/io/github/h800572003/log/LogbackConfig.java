@@ -38,8 +38,10 @@ public class LogbackConfig {
 	}
 
 	public void register(String code, String name, boolean isPackage, Class<?> pClass) {
-		final String packageName = isPackage ? pClass.getPackage().getName() : pClass.getName();
-		this.packageNameMap.put(code, packageName);
+		if (pClass != null) {
+			final String packageName = isPackage ? pClass.getPackage().getName() : pClass.getName();
+			this.packageNameMap.put(code, packageName);
+		}
 		final Code myCode = new Code();
 		myCode.setKey(code);
 		myCode.setValue(name);
@@ -55,6 +57,7 @@ public class LogbackConfig {
 
 	private void appender(String name, String pClass) {
 		final Logger log = (Logger) LoggerFactory.getLogger(pClass);
+		log.setAdditive(false);
 		final LoggerContext loggerContext = log.getLoggerContext();
 		log.addAppender(createAppender(name, loggerContext));
 	}
