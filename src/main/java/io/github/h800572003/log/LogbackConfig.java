@@ -28,6 +28,11 @@ public class LogbackConfig {
 	private final Map<String, String> packageNameMap = new HashMap<>();
 	private final Set<String> set = new HashSet<>();
 	private final List<Code> codes = new ArrayList<>();
+	private boolean additive = false;
+
+	public void setAdditive(boolean additive) {
+		this.additive = additive;
+	}
 
 	public void registerPackage(String code, String name, Class<?> pClass) {
 		this.register(code, name, true, pClass);
@@ -51,13 +56,13 @@ public class LogbackConfig {
 
 	public void setup() {
 		for (final Map.Entry<String, String> entry : this.packageNameMap.entrySet()) {
-			this.appender(entry.getKey(), entry.getValue());
+			this.appender(entry.getKey(), entry.getValue(), additive);
 		}
 	}
 
-	private void appender(String name, String pClass) {
+	private void appender(String name, String pClass, boolean additive) {
 		final Logger log = (Logger) LoggerFactory.getLogger(pClass);
-		log.setAdditive(false);
+		log.setAdditive(additive);
 		final LoggerContext loggerContext = log.getLoggerContext();
 		log.addAppender(createAppender(name, loggerContext));
 	}
