@@ -1,5 +1,8 @@
 package io.github.h800572003.textcut;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -10,7 +13,7 @@ import java.util.function.Predicate;
  *
  * @param <T>
  */
-public interface ITextCutRuleslSerive<T> {
+public interface ITextCutRulesSerive<T> {
 
 	/**
 	 * 加入規則
@@ -27,5 +30,15 @@ public interface ITextCutRuleslSerive<T> {
 	 * @return
 	 */
 	List<T> to(List<String> lines);
+
+	/**
+	 * 檔案讀取
+	 * 
+	 * @param path
+	 * @param charset
+	 * @return
+	 * @throws IOException
+	 */
+	List<T> to(Path path, Charset charset) throws IOException;
 
 }

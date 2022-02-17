@@ -14,11 +14,11 @@ import org.junit.jupiter.api.Test;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-class TextCutRuleslSeriveTest {
+class TextCutRuleslSeriveTest2 {
 	private final String UTF8 = "utf-8";
 	ITextCutRulesSerive<TextLine> textCutRuleslSerive = new TextCutRuleslSerive<>();
 
-	public TextCutRuleslSeriveTest() {
+	public TextCutRuleslSeriveTest2() {
 		textCutRuleslSerive.addRule(i -> i.startsWith("ST01"), getST01());
 		textCutRuleslSerive.addRule(i -> i.startsWith("ST02"), getST02());
 		textCutRuleslSerive.addRule(i -> i.startsWith("ST03"), getST03());
@@ -26,7 +26,7 @@ class TextCutRuleslSeriveTest {
 	}
 
 	/**
-	 * 使用長度分割
+	 * 使用PATTERN分割
 	 */
 	@Test
 	public void test_give_4Line_reutrn_4Line() {
@@ -34,10 +34,10 @@ class TextCutRuleslSeriveTest {
 		// GIVE
 		// ST011234567890,ST0212345,ST0312
 		List<String> line = new ArrayList<String>();
-		line.add("ST011234567890");
-		line.add("ST0212345");
-		line.add("ST0312");
-		line.add("ST010987654321");
+		line.add("ST01~@1234567890");
+		line.add("ST02~@12345");
+		line.add("ST03~@12");
+		line.add("ST01~@0987654321");
 
 		// WHEN 轉換
 		List<TextLine> list = textCutRuleslSerive.to(line);
@@ -58,27 +58,24 @@ class TextCutRuleslSeriveTest {
 		assertThat(list.get(3).next().endsWith("0987654321"));
 
 	}
-	
+
 	TextCutRoleConfig<TextLine> getST01() {
-		TextCutRoleConfig<TextLine> textCutRoleConfig = new TextCutRoleConfig<>(TextCutType.BYTE, UTF8, line -> line);
-		textCutRoleConfig.addRole(4);
-		textCutRoleConfig.addRole(10);
+		TextCutRoleConfig<TextLine> textCutRoleConfig = new TextCutRoleConfig<>(TextCutType.PATTERN, UTF8, line -> line);
+		textCutRoleConfig.setPattern("~@");
 		return textCutRoleConfig;
 
 	}
 
 	TextCutRoleConfig<TextLine> getST02() {
-		TextCutRoleConfig<TextLine> textCutRoleConfig = new TextCutRoleConfig<>(TextCutType.BYTE, UTF8, line -> line);
-		textCutRoleConfig.addRole(4);
-		textCutRoleConfig.addRole(5);
+		TextCutRoleConfig<TextLine> textCutRoleConfig = new TextCutRoleConfig<>(TextCutType.PATTERN, UTF8, line -> line);
+		textCutRoleConfig.setPattern("~@");
 		return textCutRoleConfig;
 
 	}
 
 	TextCutRoleConfig<TextLine> getST03() {
-		TextCutRoleConfig<TextLine> textCutRoleConfig = new TextCutRoleConfig<>(TextCutType.BYTE, UTF8, line -> line);
-		textCutRoleConfig.addRole(4);
-		textCutRoleConfig.addRole(2);
+		TextCutRoleConfig<TextLine> textCutRoleConfig = new TextCutRoleConfig<>(TextCutType.PATTERN, UTF8, line -> line);
+		textCutRoleConfig.setPattern("~@");
 		return textCutRoleConfig;
 
 	}
