@@ -1,17 +1,50 @@
 package io.github.h800572003.ibatis;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.apache.ibatis.session.SqlSession;
 
 import com.google.common.collect.Lists;
 
 public interface IBatisHelplerService<T> {
-	@FunctionalInterface
-	interface BatchRunnable<T> {
-		public void update(SqlSession openSession, T data);
+
+	public class BatchContext<T> {
+		private SqlSession openSession;
+		private T data;
+		private Map<String, Object> cacheMap = new HashMap<String, Object>();
+
+		public BatchContext(SqlSession openSession, T data) {
+			super();
+			this.openSession = openSession;
+			this.data = data;
+		}
+
+		public SqlSession getOpenSession() {
+			return openSession;
+		}
+
+		public T getData() {
+			return data;
+		}
+
+		public void put(String key, Object value) {
+			this.cacheMap.put(key, value);
+		}
+
+		public Optional<Object> getValue(String key) {
+			boolean containsKey = cacheMap.containsKey(key);
+			if (containsKey) {
+				return Optional.empty();
+			}
+			Object object = cacheMap.get(key);
+			return Optional.ofNullable(object);
+		}
+
 	}
-	
 
 	/**
 	 * 
@@ -21,7 +54,7 @@ public interface IBatisHelplerService<T> {
 	 * @param isErrorBreak
 	 * @return
 	 */
-	BatchResult<T> batchExecute(int batchSize, List<T> datas, BatchRunnable<T> runnable, boolean isErrorBreak);
+	BatchResult<T> batchExecute(int batchSize, List<T> datas, Consumer<BatchContext<T>> runnable, boolean isErrorBreak);
 
 	public class BatchResult<T> {
 		List<BatchDoneGroup<T>> doneGroups = Lists.newArrayList();
@@ -58,13 +91,21 @@ public interface IBatisHelplerService<T> {
 	}
 
 	public class BatchErrorGroup<T> {
-		Throwable throwable;
-		List<T> src;
+		private Throwable throwable;
+		private List<T> src;
 
 		public BatchErrorGroup(Throwable throwable, List<T> src) {
 			super();
 			this.throwable = throwable;
 			this.src = src;
+		}
+
+		public Throwable getThrowable() {
+			return throwable;
+		}
+
+		public List<T> getSrc() {
+			return src;
 		}
 
 	}
@@ -76,7 +117,7 @@ public interface IBatisHelplerService<T> {
 	 * @param datas
 	 * @param runnable
 	 */
-	default BatchResult<T> batchExecute(int batchSize, List<T> datas, BatchRunnable<T> runnable) {
+	default BatchResult<T> batchExecute(int batchSize, List<T> datas, Consumer<BatchContext<T>> runnable) {
 		return this.batchExecute(batchSize, datas, runnable, false);
 	}
 }

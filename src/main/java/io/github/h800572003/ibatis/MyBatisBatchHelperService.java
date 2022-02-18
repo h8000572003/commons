@@ -2,12 +2,14 @@ package io.github.h800572003.ibatis;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import io.github.h800572003.exception.ApBusinessException;
+import io.github.h800572003.ibatis.IBatisHelplerService.BatchContext;
 
 /**
  * Bacth Service
@@ -26,12 +28,14 @@ public class MyBatisBatchHelperService<T> implements IBatisHelplerService<T> {
 	}
 
 	@Override
-	public BatchResult<T> batchExecute(int batchSize, List<T> datas, BatchRunnable<T> runnable, boolean isErrorBreak) {
+	public BatchResult<T> batchExecute(int batchSize, List<T> datas, Consumer<BatchContext<T>> runnable,
+			boolean isErrorBreak) {
 		final BatchResult<T> context = new BatchResult<T>();
 		try (final SqlSession openSession = this.sqlSessionFactory.openSession(ExecutorType.BATCH, false)) {
 			final List<T> executes = new ArrayList<>();
 			for (T data : datas) {
-				runnable.update(openSession, data);
+				BatchContext<T> batchContext = new BatchContext<T>(openSession, data);
+				runnable.accept(batchContext);
 				executes.add(data);
 				if (executes.size() == batchSize) {
 					this.commit(executes, openSession, isErrorBreak, context);
