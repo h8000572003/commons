@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
 
@@ -43,7 +44,6 @@ public interface IBatisHelplerService<T> {
 			Object object = cacheMap.get(key);
 			return Optional.ofNullable(object);
 		}
-
 	}
 
 	/**
@@ -85,19 +85,20 @@ public interface IBatisHelplerService<T> {
 
 		public BatchDoneGroup(List<T> doneList) {
 			super();
-			this.doneList = doneList;
+			doneList.forEach(i -> this.doneList.add(i));
 		}
 
 	}
 
 	public class BatchErrorGroup<T> {
 		private Throwable throwable;
-		private List<T> src;
+		private List<T> src = Lists.newArrayList();
 
 		public BatchErrorGroup(Throwable throwable, List<T> src) {
 			super();
 			this.throwable = throwable;
-			this.src = src;
+			src.forEach(i -> this.src.add(i));
+
 		}
 
 		public Throwable getThrowable() {
