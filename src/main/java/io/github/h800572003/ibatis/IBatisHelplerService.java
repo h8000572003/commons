@@ -48,10 +48,10 @@ public interface IBatisHelplerService<T> {
 
 	/**
 	 * 
-	 * @param batchSize
-	 * @param datas
-	 * @param runnable
-	 * @param isErrorBreak
+	 * @param batchSize batch size
+	 * @param datas 處理資料
+	 * @param runnable 處理方式
+	 * @param isErrorBreak 異常中斷
 	 * @return
 	 */
 	BatchResult<T> batchExecute(int batchSize, List<T> datas, Consumer<BatchContext<T>> runnable, boolean isErrorBreak);
@@ -114,9 +114,9 @@ public interface IBatisHelplerService<T> {
 	/**
 	 * batch 資料所有都進去，發生錯誤保存異常
 	 *
-	 * @param batchSize
-	 * @param datas
-	 * @param runnable
+	 * @param batchSize batch size 
+	 * @param datas     處理資料
+	 * @param runnable  處理方式
 	 */
 	default BatchResult<T> batchExecute(int batchSize, List<T> datas, Consumer<BatchContext<T>> runnable) {
 		return this.batchExecute(batchSize, datas, runnable, false);

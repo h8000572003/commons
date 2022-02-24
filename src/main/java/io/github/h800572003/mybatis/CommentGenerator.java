@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 
 public class CommentGenerator extends DefaultCommentGenerator {
 
+	
 	@Override
 	public void addFieldAnnotation(Field field, IntrospectedTable introspectedTable,
 			IntrospectedColumn introspectedColumn, Set<FullyQualifiedJavaType> imports) {

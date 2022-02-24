@@ -1,34 +1,80 @@
 package io.github.h800572003.check;
 
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.function.Predicate;
 
-import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 
+/**
+ * 
+ * 檢查規則
+ * 
+ * @author andy
+ *
+ */
 public class CheckResult {
-	private List<CheckRule> checkStatuses = Lists.newArrayList();
 
-	public boolean isOk() {
-		boolean isOk = !checkStatuses.stream().filter(CheckRule::isError).findAny().isPresent();
-		return isOk;
+	private String message = null;
+	private String code = null;
+	private boolean isOk = true;
+
+	private CheckResult(String code, String message) {
+		super();
+		this.code = Objects.requireNonNull(code);
+		this.message = Objects.requireNonNull(message);
+		this.isOk = true;
 	}
 
-	public void isOk(Consumer<List<CheckRule>> consumer) {
-		List<CheckRule> errors = checkStatuses.stream().filter(CheckRule::isOk).collect(Collectors.toList());
-		consumer.accept(errors);
+	/**
+	 * 
+	 * @param code
+	 *            代碼
+	 * @param message
+	 *            訊息
+	 * @param checkPredicate
+	 *            檢查規則
+	 * @return
+	 */
+	public static CheckResult of(String code, String message, Predicate<Object> checkPredicate) {
+		CheckResult checkStatus = new CheckResult(code, message);
+		try {
+			boolean isOk = checkPredicate.test(checkStatus);
+			if (!isOk) {
+				checkStatus.error();
+			}
+			return checkStatus;
+		} catch (Exception e) {
+			checkStatus.error();
+		}
+		return checkStatus;
+
+	}
+	public static CheckResult of(String code, Predicate<Object> checkPredicate) {
+		return of(code, StringUtils.EMPTY, checkPredicate);
 	}
 
-	public void add(CheckRule checkStatus) {
-		checkStatuses.add(checkStatus);
+	protected void ok() {
+		this.isOk = true;
+	}
+
+	protected void error() {
+		this.isOk = false;
 	}
 
 	public boolean isError() {
-		return !this.isOk();
+		return !isOk;
 	}
 
-	public void isError(Consumer<List<CheckRule>> consumer) {
-		List<CheckRule> errors = checkStatuses.stream().filter(CheckRule::isError).collect(Collectors.toList());
-		consumer.accept(errors);
+	public String getMessage() {
+		return message;
 	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public boolean isOk() {
+		return isOk;
+	}
+
 }

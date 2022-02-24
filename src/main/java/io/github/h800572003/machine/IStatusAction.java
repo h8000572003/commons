@@ -15,15 +15,15 @@ public interface IStatusAction<T extends IStatus, R> {
 	/**
 	 * 註冊行為
 	 * 
-	 * @param acion
-	 * @param consumer
+	 * @param acion 行為定義
+	 * @param function   行為
 	 */
-	void register(StatusAction acion, Function<T, R> consumer);
+	void register(StatusAction acion, Function<T, R> function);
 
 	/**
 	 * 取得行為
 	 * 
-	 * @param statusAction
+	 * @param statusAction 行為定義
 	 * @return
 	 */
 	Function<T, R> getAction(StatusAction statusAction);

@@ -27,7 +27,7 @@ class ICheckServiceTest2 {
 		dto.setName(null);
 
 		// WHEN：資料檢核有不通過時，不繼續檢查
-		CheckResult checkResult = checkService.check(dto);
+		CheckResults checkResult = checkService.check(dto);
 
 		// THEN
 		assertThat(checkResult.isError()).isEqualTo(true);
@@ -37,8 +37,8 @@ class ICheckServiceTest2 {
 		});
 	}
 
-	CheckRule role1(CheckDTO checkDTO) {
-		final CheckRule status = CheckRule.of("X1", "名稱不得空白", dto -> {
+	CheckResult role1(CheckDTO checkDTO) {
+		final CheckResult status = CheckResult.of("X1", "名稱不得空白", dto -> {
 			if (checkDTO.getName() == null) {
 				return false;
 			}
@@ -48,8 +48,8 @@ class ICheckServiceTest2 {
 		return status;
 	}
 
-	CheckRule role2(CheckDTO checkDTO) {
-		final CheckRule status = CheckRule.of("X1", "名稱不得小於6", dto -> {
+	CheckResult role2(CheckDTO checkDTO) {
+		final CheckResult status = CheckResult.of("X1", "名稱不得小於6", dto -> {
 			if (checkDTO.getName().length() < 6) {
 				return false;
 			}

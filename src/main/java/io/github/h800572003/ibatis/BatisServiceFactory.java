@@ -14,8 +14,8 @@ public class BatisServiceFactory {
 	/**
 	 * 建立batch helper
 	 * 
-	 * @param <T>
-	 * @param pClass
+	 * @param <T> 處理物件泛型
+	 * @param pClass 處理物件
 	 * @return
 	 */
 	public <T> IBatisHelplerService<T> createBatchHelper(Class<T> pClass) {

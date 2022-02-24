@@ -12,9 +12,9 @@ import org.apache.commons.lang3.StringUtils;
 import io.github.h800572003.exception.ApBusinessException;
 
 public class DateUtlis {
-	final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-	final static public String YYYY_MM_DD_HH_MM_SS = "yyyy/MM/dd HH:mm:ss";
-	final static public String YYYMMDD = "yyyyMMdd";
+	static final  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+	static 	final  public String YYYY_MM_DD_HH_MM_SS = "yyyy/MM/dd HH:mm:ss";
+	static final  public String YYYMMDD = "yyyyMMdd";
 
 	public static boolean afterNow(Date date, int type, int amount) {
 		Calendar statTime = Calendar.getInstance();
@@ -59,7 +59,9 @@ public class DateUtlis {
 
 	/**
 	 * 取得今天日期
-	 */
+	 * 
+	 * @return [yyyyMMdd]格式 20220222
+	 */ 
 	public static String today() {
 		final SimpleDateFormat sdf = new SimpleDateFormat();
 		sdf.applyPattern("yyyyMMdd");

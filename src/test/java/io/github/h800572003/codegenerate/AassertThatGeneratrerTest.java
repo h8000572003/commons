@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 class AassertThatGeneratrerTest {
 
 	@Test
-	void test() {
+	void testGgenerateAssertThat() {
 		new AassertThatGeneratrer().generateAssertThat(AppleVoDTO.class, AppleVo.class, AppleVo2.class);
 
 	}

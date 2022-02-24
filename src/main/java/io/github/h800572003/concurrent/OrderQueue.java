@@ -13,7 +13,7 @@ import com.google.common.collect.Lists;
  * 
  * @author andy tsai
  *
- * @param <T>
+ * @param <T> 排隊項目
  */
 public class OrderQueue<T extends IBlockKey> implements IOrderKeyQueue<T> {
 	private final LinkedList<T> waitPool = Lists.newLinkedList();

@@ -27,14 +27,14 @@ class ICheckServiceTest {
 		dto.setName("Andy000");
 
 		// WHEN
-		final CheckResult checkResult = this.checkService.check(dto);
+		final CheckResults checkResult = this.checkService.check(dto);
 
 		// THEN
 		assertThat(checkResult.isOk()).isEqualTo(true);
 	}
 
-	CheckRule role1(CheckDTO checkDTO) {
-		final CheckRule status = CheckRule.of("X1", "名稱不得空白", dto -> {
+	CheckResult role1(CheckDTO checkDTO) {
+		final CheckResult status = CheckResult.of("X1", "名稱不得空白", dto -> {
 			if (checkDTO.getName() == null) {
 				return false;
 			}
@@ -44,8 +44,8 @@ class ICheckServiceTest {
 		return status;
 	}
 
-	CheckRule role2(CheckDTO checkDTO) {
-		final CheckRule status = CheckRule.of("X1", "名稱不得小於6", dto -> {
+	CheckResult role2(CheckDTO checkDTO) {
+		final CheckResult status = CheckResult.of("X1", "名稱不得小於6", dto -> {
 			if (checkDTO.getName().length() < 6) {
 				return false;
 			}
@@ -61,7 +61,7 @@ class ICheckServiceTest {
 		final CheckDTO dto = new CheckDTO();
 
 		// WHEN
-		final CheckResult checkResult = this.checkService.check(dto);
+		final CheckResults checkResult = this.checkService.check(dto);
 
 		// THEN
 

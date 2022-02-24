@@ -15,14 +15,14 @@ public class CheckService implements ICheckService {
 	private String defaultErrorCode = "XXX";
 
 	@Override
-	public CheckResult check(Object dto) {
+	public CheckResults check(Object dto) {
 		final List<CheckHolder> checkHolders = this.checkHolderMap.get(dto.getClass());
 		if (CollectionUtils.isEmpty(checkHolders)) {
 			this.notCheck(dto);
 		}
-		final CheckResult checkResult = new CheckResult();
+		final CheckResults checkResult = new CheckResults();
 		for (final CheckHolder holder : checkHolders) {
-			final CheckRule check = holder.check(dto, defaultErrorCode);
+			final CheckResult check = holder.check(dto, defaultErrorCode);
 			checkResult.add(check);
 			if (check.isError() && holder.isBreak()) {
 				break;
@@ -31,7 +31,7 @@ public class CheckService implements ICheckService {
 		return checkResult;
 	}
 
-	protected CheckResult notCheck(Object dto) {
+	protected CheckResults notCheck(Object dto) {
 		throw new ApBusinessException("資料無提供驗證規則:{0}", dto.getClass());
 	}
 

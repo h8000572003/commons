@@ -7,7 +7,7 @@ public interface ICheckService {
 	 * @param dto
 	 * @return
 	 */
-	CheckResult check(Object dto);
+	CheckResults check(Object dto);
 
 	/**
 	 * 加入

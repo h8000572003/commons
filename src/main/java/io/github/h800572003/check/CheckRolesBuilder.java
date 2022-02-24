@@ -19,7 +19,7 @@ public class CheckRolesBuilder<T> {
 	 * @param function
 	 * @return
 	 */
-	public CheckRolesBuilder<T> continueNext(Function<T, CheckRule> function) {
+	public CheckRolesBuilder<T> continueNext(Function<T, CheckResult> function) {
 		this.add(function, false);
 		return this;
 	}
@@ -30,14 +30,14 @@ public class CheckRolesBuilder<T> {
 	 * @param function
 	 * @return
 	 */
-	public CheckRolesBuilder<T> breakNext(Function<T, CheckRule> function) {
+	public CheckRolesBuilder<T> breakNext(Function<T, CheckResult> function) {
 		this.add(function, true);
 		return this;
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	private CheckRolesBuilder<T> add(Function<T, CheckRule> function, boolean isBreak) {
-		functions.add(new CheckHolder((Function<Object, CheckRule>) function, isBreak));
+	private CheckRolesBuilder<T> add(Function<T, CheckResult> function, boolean isBreak) {
+		functions.add(new CheckHolder((Function<Object, CheckResult>) function, isBreak));
 		return this;
 	}
 

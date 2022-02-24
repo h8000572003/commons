@@ -16,7 +16,8 @@ import io.github.h800572003.ibatis.IBatisHelplerService.BatchContext;
  * 
  * @author Andy
  *
- * @param <T>
+ * @param <T> 修改資料
+ * 
  */
 public class MyBatisBatchHelperService<T> implements IBatisHelplerService<T> {
 

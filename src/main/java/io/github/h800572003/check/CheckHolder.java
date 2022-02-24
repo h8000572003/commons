@@ -9,16 +9,16 @@ import java.util.function.Function;
  *
  */
 public class CheckHolder {
-	Function<Object, CheckRule> function;
+	Function<Object, CheckResult> function;
 	boolean isBreak;
 
-	public CheckHolder(Function<Object, CheckRule> function, boolean isBreak) {
+	public CheckHolder(Function<Object, CheckResult> function, boolean isBreak) {
 		super();
 		this.function = function;
 		this.isBreak = isBreak;
 	}
 
-	CheckRule check(Object dto, String defCode) {
+	CheckResult check(Object dto, String defCode) {
 		return function.apply(dto);
 	}
 

@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
  * 
  * @author andy tsai
  *
- * @param <T>
+ * @param <T> 鎖定物件
  */
 @Slf4j
 public class WorkLatchService<T> implements Closeable, IWorkService<T> {
@@ -68,7 +68,7 @@ public class WorkLatchService<T> implements Closeable, IWorkService<T> {
 	 * 工人池工廠
 	 * 
 	 * @param queue
-	 * @return
+	 * @return 工人池
 	 */
 	protected IWorkPool createPool(IQueue<T> queue) {
 		IWorkPool workPool = new CountDownLatchWorkPool<>(//
