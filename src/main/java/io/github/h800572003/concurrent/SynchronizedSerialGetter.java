@@ -30,7 +30,7 @@ public class SynchronizedSerialGetter implements IValueGetter {
 			this.nowValue = 0;
 		}
 		this.nowValue++;
-		final StringBuffer buffer = new StringBuffer();
+		final StringBuilder buffer = new StringBuilder();
 		buffer.append(StringUtils.leftPad(String.format("%d", this.nowValue), this.length, this.padString));
 		return buffer.toString();
 	}

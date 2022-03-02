@@ -1,6 +1,8 @@
 package io.github.h800572003.mybatis;
 
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
@@ -9,11 +11,8 @@ import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType;
 import org.mybatis.generator.internal.DefaultCommentGenerator;
 import org.mybatis.generator.internal.util.StringUtility;
 
-import lombok.extern.slf4j.Slf4j;
-
 public class CommentGenerator extends DefaultCommentGenerator {
 
-	
 	@Override
 	public void addFieldAnnotation(Field field, IntrospectedTable introspectedTable,
 			IntrospectedColumn introspectedColumn, Set<FullyQualifiedJavaType> imports) {
@@ -24,8 +23,9 @@ public class CommentGenerator extends DefaultCommentGenerator {
 			if (remarks.contains("\"")) {
 				remarks = remarks.replace("\"", "'");
 			}
-			field.addJavaDocLine("//" + remarks);
+			field.addJavaDocLine("//" + Stream.of(remarks.split("\n")).collect(Collectors.joining("\n//")));
 		}
 
 	}
+
 }

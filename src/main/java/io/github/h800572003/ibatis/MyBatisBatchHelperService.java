@@ -16,12 +16,13 @@ import io.github.h800572003.ibatis.IBatisHelplerService.BatchContext;
  * 
  * @author Andy
  *
- * @param <T> 修改資料
+ * @param <T>
+ *            修改資料
  * 
  */
 public class MyBatisBatchHelperService<T> implements IBatisHelplerService<T> {
 
-	public SqlSessionFactory sqlSessionFactory;
+	public final SqlSessionFactory sqlSessionFactory;
 
 	public MyBatisBatchHelperService(SqlSessionFactory sqlSessionFactory) {
 		super();
@@ -31,11 +32,11 @@ public class MyBatisBatchHelperService<T> implements IBatisHelplerService<T> {
 	@Override
 	public BatchResult<T> batchExecute(int batchSize, List<T> datas, Consumer<BatchContext<T>> runnable,
 			boolean isErrorBreak) {
-		final BatchResult<T> context = new BatchResult<T>();
+		final BatchResult<T> context = new BatchResult<>();
 		try (final SqlSession openSession = this.sqlSessionFactory.openSession(ExecutorType.BATCH, false)) {
 			final List<T> executes = new ArrayList<>();
 			for (T data : datas) {
-				BatchContext<T> batchContext = new BatchContext<T>(openSession, data);
+				BatchContext<T> batchContext = new BatchContext<>(openSession, data);
 				runnable.accept(batchContext);
 				executes.add(data);
 				if (executes.size() == batchSize) {
@@ -52,9 +53,9 @@ public class MyBatisBatchHelperService<T> implements IBatisHelplerService<T> {
 			BatchResult<T> context) {
 		try {
 			openSession.commit();
-			context.doneGroups.add(new BatchDoneGroup<T>(executes));
+			context.doneGroups.add(new BatchDoneGroup<>(executes));
 		} catch (Exception e) {
-			context.batchErrorGroups.add(new BatchErrorGroup<T>(e, executes));
+			context.batchErrorGroups.add(new BatchErrorGroup<>(e, executes));
 			openSession.rollback();
 			if (isErrorBreak) {
 				throw new ApBusinessException("batch error SqlSessionException", e);

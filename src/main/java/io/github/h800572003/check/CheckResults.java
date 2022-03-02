@@ -1,10 +1,15 @@
 package io.github.h800572003.check;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
+
+import io.github.h800572003.exception.ApBusinessException;
 
 public class CheckResults {
 	private final List<CheckResult> checkStatuses = Lists.newArrayList();
@@ -13,11 +18,24 @@ public class CheckResults {
 		final List<CheckResult> okList = this.checkStatuses.stream()//
 				.filter(CheckResult::isOk)//
 				.collect(Collectors.toList());//
-		consumer.accept(this.isOk()?okList:Lists.newArrayList());
+		consumer.accept(this.isOk() ? okList : Lists.newArrayList());
 	}
 
 	protected void add(CheckResult checkStatus) {
 		this.checkStatuses.add(checkStatus);
+	}
+
+	/**
+	 * 當異常時中斷
+	 * 
+	 * @param <T>
+	 * @param functoin
+	 */
+	public <T extends RuntimeException> void ifError(Function<CheckResult, T> functoin) {
+		Optional<CheckResult> findFirst = this.checkStatuses.stream().filter(CheckResult::isError).findFirst();
+		if (findFirst.isPresent()) {
+			throw functoin.apply(findFirst.get());
+		}
 	}
 
 	public boolean isOk() {
