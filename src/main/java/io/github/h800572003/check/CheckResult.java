@@ -1,7 +1,7 @@
 package io.github.h800572003.check;
 
 import java.util.Objects;
-import java.util.function.Predicate;
+import java.util.function.BooleanSupplier;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -35,11 +35,10 @@ public class CheckResult {
 	 *            檢查規則
 	 * @return
 	 */
-	public static CheckResult of(String code, String message, Predicate<Object> checkPredicate) {
+	public static CheckResult of(String code, String message, BooleanSupplier checkPredicate) {
 		CheckResult checkStatus = new CheckResult(code, message);
 		try {
-			boolean isOk = checkPredicate.test(checkStatus);
-			if (!isOk) {
+			if (!checkPredicate.getAsBoolean()) {
 				checkStatus.error();
 			}
 			return checkStatus;
@@ -49,7 +48,8 @@ public class CheckResult {
 		return checkStatus;
 
 	}
-	public static CheckResult of(String code, Predicate<Object> checkPredicate) {
+
+	public static CheckResult of(String code, BooleanSupplier checkPredicate) {
 		return of(code, StringUtils.EMPTY, checkPredicate);
 	}
 

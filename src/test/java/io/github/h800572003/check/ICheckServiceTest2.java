@@ -14,8 +14,8 @@ class ICheckServiceTest2 {
 	public ICheckServiceTest2() {
 		CheckRolesBuilder<CheckDTO> checkRolesBuilder = new CheckRolesBuilder<>(CheckDTO.class);
 		checkRolesBuilder//
-				.breakNext(this::role1)//
-				.breakNext(this::role2);//
+				.breakNext(i -> CheckResult.of("X1", "名稱不得空白", () -> CheckRoles.isNotNull(i.getName())))//
+				.breakNext(i -> CheckResult.of("X1", "名稱不得小於6", () -> CheckRoles.isLessThan(i.getName().length(), 6)));//
 		this.checkService.add(checkRolesBuilder);
 	}
 
@@ -37,24 +37,4 @@ class ICheckServiceTest2 {
 		});
 	}
 
-	CheckResult role1(CheckDTO checkDTO) {
-		final CheckResult status = CheckResult.of("X1", "名稱不得空白", dto -> {
-			if (checkDTO.getName() == null) {
-				return false;
-			}
-			return true;
-		});
-
-		return status;
-	}
-
-	CheckResult role2(CheckDTO checkDTO) {
-		final CheckResult status = CheckResult.of("X1", "名稱不得小於6", dto -> {
-			if (checkDTO.getName().length() < 6) {
-				return false;
-			}
-			return true;
-		});
-		return status;
-	}
 }
