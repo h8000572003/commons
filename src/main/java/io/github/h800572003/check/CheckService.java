@@ -2,8 +2,7 @@ package io.github.h800572003.check;
 
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.util.CollectionUtils;
+import java.util.function.Consumer;
 
 import com.google.common.collect.Maps;
 
@@ -11,38 +10,32 @@ import io.github.h800572003.exception.ApBusinessException;
 
 public class CheckService implements ICheckService {
 
-	private final Map<Class<?>, List<CheckHolder>> checkHolderMap = Maps.newConcurrentMap();
-	private String defaultErrorCode = "XXX";
+	private final Map<Class<?>, CheckHolder> checkHolderMap = Maps.newConcurrentMap();
+	private Consumer<List<CheckResult>> commonHandler;// 通用處理
 
 	@Override
 	public CheckResults check(Object dto) {
-		final List<CheckHolder> checkHolders = this.checkHolderMap.get(dto.getClass());
-		if (CollectionUtils.isEmpty(checkHolders)) {
-			this.notCheck(dto);
+		final CheckHolder checkHolder = this.checkHolderMap.get(dto.getClass());
+		if (checkHolder == null) {
+			throw new ApBusinessException("資料無提供驗證規則:{0}", dto.getClass());
 		}
-		final CheckResults checkResult = new CheckResults();
-		for (final CheckHolder holder : checkHolders) {
-			final CheckResult check = holder.check(dto, defaultErrorCode);
-			checkResult.add(check);
-			if (check.isError() && holder.isBreak()) {
-				break;
-			}
-		}
-		return checkResult;
-	}
+		return checkHolder.getCheckResults(dto);
 
-	protected CheckResults notCheck(Object dto) {
-		throw new ApBusinessException("資料無提供驗證規則:{0}", dto.getClass());
 	}
 
 	@Override
 	public void add(CheckRolesBuilder<?> checkRolesBuilder) {
-		this.checkHolderMap.put(checkRolesBuilder.checkMainClasss, checkRolesBuilder.functions);
-
+		this.checkHolderMap.put(checkRolesBuilder.checkMainClasss,
+				checkRolesBuilder.createCheckRegister(this.commonHandler));
 	}
 
-	public void setDefaultErrorCode(String defaultErrorCode) {
-		this.defaultErrorCode = defaultErrorCode;
+	@Override
+	public void handleError(Object dto) {
+		this.check(dto).handle();
+	}
+
+	public void setCommonHandler(Consumer<List<CheckResult>> commonHandler) {
+		this.commonHandler = commonHandler;
 	}
 
 }

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
@@ -13,12 +12,18 @@ import io.github.h800572003.exception.ApBusinessException;
 
 public class CheckResults {
 	private final List<CheckResult> checkStatuses = Lists.newArrayList();
+	private final Consumer<List<CheckResult>> handle;
+
+	public CheckResults(Consumer<List<CheckResult>> consumer) {
+		super();
+		this.handle = consumer;
+	}
 
 	public void isOk(Consumer<List<CheckResult>> consumer) {
 		final List<CheckResult> okList = this.checkStatuses.stream()//
 				.filter(CheckResult::isOk)//
 				.collect(Collectors.toList());//
-		consumer.accept(this.isOk() ? okList : Lists.newArrayList());
+		consumer.accept(this.isAllOk() ? okList : Lists.newArrayList());
 	}
 
 	protected void add(CheckResult checkStatus) {
@@ -32,21 +37,31 @@ public class CheckResults {
 	 * @param functoin
 	 */
 	public <T extends RuntimeException> void ifError(Function<CheckResult, T> functoin) {
-		Optional<CheckResult> findFirst = this.checkStatuses.stream().filter(CheckResult::isError).findFirst();
+		final Optional<CheckResult> findFirst = this.checkStatuses.stream()//
+				.filter(CheckResult::isError)//
+				.findFirst();//
 		if (findFirst.isPresent()) {
 			throw functoin.apply(findFirst.get());
 		}
 	}
 
-	public boolean isOk() {
-		final boolean isError = !this.checkStatuses.stream()//
+	/**
+	 * 是否全部ok
+	 * 
+	 * @return
+	 */
+	public boolean isAllOk() {
+		Long okCount = checkStatuses.stream()///
 				.filter(CheckResult::isOk)//
-				.findAny().isPresent();//
-		return !isError;
+				.collect(Collectors.counting());//
+		return okCount == checkStatuses.size();
 	}
 
-	public boolean isError() {
-		return !this.isOk();
+	public boolean isAllError() {
+		Long errorCount = checkStatuses.stream()//
+				.filter(CheckResult::isError)//
+				.collect(Collectors.counting());//
+		return errorCount == checkStatuses.size();
 	}
 
 	/**
@@ -56,8 +71,7 @@ public class CheckResults {
 	 *            異常清單
 	 */
 	public void isError(Consumer<List<CheckResult>> consumer) {
-		final List<CheckResult> errors = this.getErrors();
-		consumer.accept(this.isError() ? errors : Lists.newArrayList());
+		consumer.accept(this.getErrors());
 	}
 
 	/**
@@ -66,9 +80,29 @@ public class CheckResults {
 	 * @return 異常清單
 	 */
 	public List<CheckResult> getErrors() {
-		final List<CheckResult> errors = this.checkStatuses.stream()//
+		return this.checkStatuses.stream()//
 				.filter(CheckResult::isError)//
-				.collect(Collectors.toList());//
-		return errors;
+				.collect(Collectors.toList());// ;
+	}
+
+	/**
+	 * 取得取得正常清單
+	 * 
+	 * @return 異常清單
+	 */
+	public List<CheckResult> getOks() {
+		return this.checkStatuses.stream()//
+				.filter(CheckResult::isOk)//
+				.collect(Collectors.toList());// ;
+	}
+
+	/**
+	 * 驗證處理
+	 */
+	protected void handle() {
+		if (this.handle == null) {
+			throw new ApBusinessException("無定義handle");
+		}
+		this.handle.accept(this.getErrors());
 	}
 }

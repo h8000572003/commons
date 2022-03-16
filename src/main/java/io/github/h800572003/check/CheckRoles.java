@@ -10,6 +10,10 @@ import org.apache.commons.lang3.StringUtils;
 
 public class CheckRoles {
 
+	private CheckRoles() {
+
+	}
+
 	/**
 	 * 非null
 	 * 
@@ -100,7 +104,7 @@ public class CheckRoles {
 	 * @return
 	 */
 	public static boolean isLessThan(LocalDate start, LocalDate traget, int day) {
-		long between = ChronoUnit.DAYS.between(start, traget);
+		final long between = ChronoUnit.DAYS.between(start, traget);
 		return between < day;
 	}
 
@@ -109,7 +113,7 @@ public class CheckRoles {
 	}
 
 	public static boolean isLessThanOrEqualTo(LocalDate start, LocalDate traget, int day) {
-		long between = ChronoUnit.DAYS.between(start, traget);
+		final long between = ChronoUnit.DAYS.between(start, traget);
 		return between <= day;
 	}
 

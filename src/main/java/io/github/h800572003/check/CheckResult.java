@@ -36,13 +36,13 @@ public class CheckResult {
 	 * @return
 	 */
 	public static CheckResult of(String code, String message, BooleanSupplier checkPredicate) {
-		CheckResult checkStatus = new CheckResult(code, message);
+		final CheckResult checkStatus = new CheckResult(code, message);
 		try {
 			if (!checkPredicate.getAsBoolean()) {
 				checkStatus.error();
 			}
 			return checkStatus;
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			checkStatus.error();
 		}
 		return checkStatus;
@@ -62,19 +62,19 @@ public class CheckResult {
 	}
 
 	public boolean isError() {
-		return !isOk;
+		return !this.isOk;
 	}
 
 	public String getMessage() {
-		return message;
+		return this.message;
 	}
 
 	public String getCode() {
-		return code;
+		return this.code;
 	}
 
 	public boolean isOk() {
-		return isOk;
+		return this.isOk;
 	}
 
 }
