@@ -9,8 +9,8 @@ public class CheckRolesBuilder<T> {
 
 	protected List<CheckStep> functions = new ArrayList<>();
 	protected Class<T> checkMainClasss;
-	protected Consumer<List<CheckResult>> check;
-	protected Consumer<List<CheckResult>> commonHandler;
+	protected Consumer<CheckResultsContext> check;
+	protected Consumer<CheckResultsContext> commonHandler;
 
 	public CheckRolesBuilder(Class<T> checkMain) {
 		this.checkMainClasss = checkMain;
@@ -49,12 +49,12 @@ public class CheckRolesBuilder<T> {
 		return this;
 	}
 
-	protected CheckHolder createCheckRegister(Consumer<List<CheckResult>> commonHandler) {
+	protected CheckHolder createCheckRegister(Consumer<CheckResultsContext> commonHandler) {
 		this.commonHandler = commonHandler;
 		return new CheckHolder(this);
 	}
 
-	public void setErrorHandle(Consumer<List<CheckResult>> check) {
+	public void setErrorHandle(Consumer<CheckResultsContext> check) {
 		this.check = check;
 	}
 

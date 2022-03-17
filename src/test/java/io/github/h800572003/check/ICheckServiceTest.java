@@ -2,10 +2,9 @@ package io.github.h800572003.check;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,45 +13,49 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 class ICheckServiceTest {
 
-	private boolean isCustomHandle = false;
+	private static final String X2 = "X2";
+	private static final String X1 = "X1";
+	private static final String X3 = "X3";
+	private Object checkSource;
+	Consumer<CheckResultsContext> commonHandle;
+	Consumer<CheckResultsContext> customerHandle;
+	String handResult = "";
 
 	public ICheckServiceTest() {
-		this.isCustomHandle = false;
 		log.info("ICheckServiceTest");
-	}
-
-	private void handle(List<CheckResult> checkStatuses) {
-		log.info("call customer checkStatuses:{}", ToStringBuilder.reflectionToString(checkStatuses));
-		this.isCustomHandle = true;
-	}
-
-	private void commonhandle(List<CheckResult> checkStatuses) {
-		log.info("call customer checkStatuses:{}", ToStringBuilder.reflectionToString(checkStatuses));
-		this.isCustomHandle = true;
 	}
 
 	@BeforeEach
 	public void init() {
 		log.info("init");
+		customerHandle = (Consumer<CheckResultsContext>) t -> {
+			CheckDTO source = t.getSource(CheckDTO.class);
+			checkSource = source;
+			handResult = "customerHandle";
+		};
+		commonHandle = (Consumer<CheckResultsContext>) t -> {
+			CheckDTO source = t.getSource(CheckDTO.class);
+			checkSource = source;
+			handResult = "commonHandle";
+		};
 
-		this.isCustomHandle = false;
 	}
 
 	private ICheckService createService(CreateServiceParameter parameterObject) {
 
 		final CheckRolesBuilder<CheckDTO> checkRolesBuilder = new CheckRolesBuilder<>(CheckDTO.class);
 		checkRolesBuilder//
-				.next(i -> CheckResult.of("X1", "名稱不得空白", () -> CheckRoles.isNotNull(i.getName())), parameterObject.isBeak())//
-				.next(i -> CheckResult.of("X2", "名稱不得小於6", () -> CheckRoles.isLessThan(i.getName().length(), 6)),
+				.next(i -> CheckResult.of(X1, "名稱不得空白", () -> CheckRoles.isNotNull(i.getName())),
 						parameterObject.isBeak())//
-				.next(i -> CheckResult.of("X3", "名稱大於2",
-						() -> CheckRoles.isBiggerThanOrEqualTo(i.getName().length(), 2)), parameterObject.isBeak())//
-				.setErrorHandle(this::handle);
+				.next(i -> CheckResult.of(X2, "名稱不得小於6", () -> CheckRoles.isLessThan(i.getName().length(), 6)),
+						parameterObject.isBeak())//
+				.next(i -> CheckResult.of(X3, "名稱大於2", () -> CheckRoles.isBiggerThanOrEqualTo(i.getName().length(), 2)),
+						parameterObject.isBeak())//
+				.setErrorHandle(customerHandle);
 
-		final CheckService checkService = new CheckService();
+		final CheckService checkService = new CheckService(commonHandle);
 		if (parameterObject.isUseCommon()) {
 			checkRolesBuilder.setErrorHandle(null);
-			checkService.setCommonHandler(this::commonhandle);
 		}
 		checkService.add(checkRolesBuilder);
 
@@ -72,7 +75,7 @@ class ICheckServiceTest {
 
 		// WHEN
 
-		final CheckResults checkResult = this.createService(new CreateServiceParameter(false, false)).check(dto);
+		final CheckResultsContext checkResult = this.createService(new CreateServiceParameter(false, false)).check(dto);
 
 		// THEN
 		assertThat(checkResult.isAllOk()).isFalse();
@@ -82,9 +85,7 @@ class ICheckServiceTest {
 		assertThat(checkResult.getErrors()//
 				.stream().map(i -> i.getCode())//
 				.collect(Collectors.joining(",")))//
-						.isEqualTo("X3");//
-
-		assertThat(this.isCustomHandle).isFalse();
+						.isEqualTo(X3);//
 	}
 
 	/**
@@ -100,28 +101,35 @@ class ICheckServiceTest {
 
 		// WHEN
 		CreateServiceParameter parameterObject = new CreateServiceParameter(false, false);
-		
-		
-		
-		final CheckResults checkResult = this.createService(parameterObject).check(dto);
+
+		final CheckResultsContext checkResult = this.createService(parameterObject).check(dto);
 
 		// THEN
 		assertThat(checkResult.isAllOk()).isTrue();// =>all true
 		assertThat(checkResult.isAllError()).isFalse();// all error fasle
 		assertThat(checkResult.getErrors()).size().isEqualTo(0);
 		assertThat(checkResult.getOks()).size().isEqualTo(3);
+
 	}
 
 	/**
 	 * 輸入姓名：Andy 呼叫 handleError
 	 */
 	@Test
-	void test_handelError() {
+	void test_handelCommonError() {
+
+		this.createService(new CreateServiceParameter(false, true)).handleError(new CheckDTO());
+		assertThat(handResult).isEqualTo("commonHandle");
+	}
+
+	/**
+	 * 輸入姓名：Andy 呼叫 handleError
+	 */
+	@Test
+	void test_handelCustomer() {
 
 		this.createService(new CreateServiceParameter(false, false)).handleError(new CheckDTO());
-
-		assertThat(this.isCustomHandle).isTrue();
-
+		assertThat(handResult).isEqualTo("customerHandle");
 	}
 
 }

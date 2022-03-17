@@ -8,7 +8,7 @@ public interface ICheckService {
 	 * @param dto
 	 * @return
 	 */
-	CheckResults check(Object dto);
+	CheckResultsContext check(Object dto);
 
 	void handleError(Object dto);
 	/**

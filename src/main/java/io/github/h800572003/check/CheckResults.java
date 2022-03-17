@@ -10,15 +10,18 @@ import com.google.common.collect.Lists;
 
 import io.github.h800572003.exception.ApBusinessException;
 
-public class CheckResults {
+public class CheckResults implements CheckResultsContext {
 	private final List<CheckResult> checkStatuses = Lists.newArrayList();
-	private final Consumer<List<CheckResult>> handle;
+	private final Consumer<CheckResultsContext> handle;
+	private final Object src;
 
-	public CheckResults(Consumer<List<CheckResult>> consumer) {
+	public CheckResults(Consumer<CheckResultsContext> consumer, Object src) {
 		super();
 		this.handle = consumer;
+		this.src = src;
 	}
 
+	@Override
 	public void isOk(Consumer<List<CheckResult>> consumer) {
 		final List<CheckResult> okList = this.checkStatuses.stream()//
 				.filter(CheckResult::isOk)//
@@ -36,6 +39,7 @@ public class CheckResults {
 	 * @param <T>
 	 * @param functoin
 	 */
+	@Override
 	public <T extends RuntimeException> void ifError(Function<CheckResult, T> functoin) {
 		final Optional<CheckResult> findFirst = this.checkStatuses.stream()//
 				.filter(CheckResult::isError)//
@@ -50,6 +54,7 @@ public class CheckResults {
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean isAllOk() {
 		Long okCount = checkStatuses.stream()///
 				.filter(CheckResult::isOk)//
@@ -57,6 +62,7 @@ public class CheckResults {
 		return okCount == checkStatuses.size();
 	}
 
+	@Override
 	public boolean isAllError() {
 		Long errorCount = checkStatuses.stream()//
 				.filter(CheckResult::isError)//
@@ -70,6 +76,7 @@ public class CheckResults {
 	 * @param consumer
 	 *            異常清單
 	 */
+	@Override
 	public void isError(Consumer<List<CheckResult>> consumer) {
 		consumer.accept(this.getErrors());
 	}
@@ -79,6 +86,7 @@ public class CheckResults {
 	 * 
 	 * @return 異常清單
 	 */
+	@Override
 	public List<CheckResult> getErrors() {
 		return this.checkStatuses.stream()//
 				.filter(CheckResult::isError)//
@@ -88,8 +96,9 @@ public class CheckResults {
 	/**
 	 * 取得取得正常清單
 	 * 
-	 * @return 異常清單
+	 * @return 正常清單
 	 */
+	@Override
 	public List<CheckResult> getOks() {
 		return this.checkStatuses.stream()//
 				.filter(CheckResult::isOk)//
@@ -99,10 +108,17 @@ public class CheckResults {
 	/**
 	 * 驗證處理
 	 */
-	protected void handle() {
+	@Override
+	public void handle() {
 		if (this.handle == null) {
 			throw new ApBusinessException("無定義handle");
 		}
-		this.handle.accept(this.getErrors());
+		this.handle.accept(this);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getSource(Class<T> pClass) {
+		return src != null ? (T) src : null;
 	}
 }

@@ -1,6 +1,5 @@
 package io.github.h800572003.check;
 
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -11,10 +10,15 @@ import io.github.h800572003.exception.ApBusinessException;
 public class CheckService implements ICheckService {
 
 	private final Map<Class<?>, CheckHolder> checkHolderMap = Maps.newConcurrentMap();
-	private Consumer<List<CheckResult>> commonHandler;// 通用處理
+	private final Consumer<CheckResultsContext> commonHandler;// 通用處理
+
+	public CheckService(Consumer<CheckResultsContext> commonHandler) {
+		super();
+		this.commonHandler = commonHandler;
+	}
 
 	@Override
-	public CheckResults check(Object dto) {
+	public CheckResultsContext check(Object dto) {
 		final CheckHolder checkHolder = this.checkHolderMap.get(dto.getClass());
 		if (checkHolder == null) {
 			throw new ApBusinessException("資料無提供驗證規則:{0}", dto.getClass());
@@ -32,10 +36,6 @@ public class CheckService implements ICheckService {
 	@Override
 	public void handleError(Object dto) {
 		this.check(dto).handle();
-	}
-
-	public void setCommonHandler(Consumer<List<CheckResult>> commonHandler) {
-		this.commonHandler = commonHandler;
 	}
 
 }
