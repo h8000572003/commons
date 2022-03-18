@@ -12,7 +12,7 @@
 	</parent>
 	<groupId>io.github.h8000572003</groupId>
 	<artifactId>commons</artifactId>
-	<version>0.3.6</version>
+	<version>0.3.7</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>jar</packaging>
 	<description>commons utils</description>
@@ -96,11 +96,6 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.8.0</version>
-		</dependency>
-		<dependency>
-			<groupId>io.github.h8000572003</groupId>
-			<artifactId>backend</artifactId>
-			<version>0.0.1</version>
 		</dependency>
 
 		<dependency>
