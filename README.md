@@ -13,4 +13,4 @@
 7. 工人池
 8. code generate
 9. slfj4 log leavel動態調整元件 0.2.3
-
+10.資料驗證加入

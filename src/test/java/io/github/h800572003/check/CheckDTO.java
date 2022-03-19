@@ -1,6 +1,6 @@
 package io.github.h800572003.check;
 
-public class CheckDTO {
+public class CheckDTO extends BaseDTO implements ICheckDTO, ICheckDTO2 {
 
 	private String name;
 
@@ -9,6 +9,7 @@ public class CheckDTO {
 
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

@@ -45,6 +45,10 @@ public class CheckRoles {
 		return value < less;
 	}
 
+	public static boolean isLessThan(String value, int less) {
+		return isLessThan(value.length(),less);
+	}
+
 	/**
 	 * 大於
 	 * 
@@ -54,6 +58,10 @@ public class CheckRoles {
 	 */
 	public static boolean isBiggerThan(int value, int bigger) {
 		return value > bigger;
+	}
+
+	public static boolean isBiggerThan(String value, int bigger) {
+		return isBiggerThan(value.length(), bigger);
 	}
 
 	/**
@@ -66,6 +74,18 @@ public class CheckRoles {
 	 */
 	public static boolean isBetween(int value, int start, int end) {
 		return (value >= start) && (value <= end);
+	}
+
+	/**
+	 * 範圍內
+	 * 
+	 * @param value
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public static boolean isBetween(String value, int start, int end) {
+		return isBetween(value.length(), start, end);
 	}
 
 	public static <T> boolean isEqual(T t1, T t2) {
@@ -83,6 +103,10 @@ public class CheckRoles {
 		return value <= less;
 	}
 
+	public static boolean isLessThanOrEqualTo(String value, int less) {
+		return isLessThanOrEqualTo(value.length(), less);
+	}
+
 	/**
 	 * 大於
 	 * 
@@ -93,6 +117,11 @@ public class CheckRoles {
 	public static boolean isBiggerThanOrEqualTo(int value, int bigger) {
 		return value >= bigger;
 	}
+
+	public static boolean isBiggerThanOrEqualTo(String value, int bigger) {
+		return isBiggerThanOrEqualTo(value.length(), bigger);
+	}
+	;
 
 	/**
 	 * 

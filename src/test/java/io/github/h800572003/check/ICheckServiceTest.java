@@ -43,7 +43,7 @@ class ICheckServiceTest {
 
 	private ICheckService createService(CreateServiceParameter parameterObject) {
 
-		final CheckRolesBuilder<CheckDTO> checkRolesBuilder = new CheckRolesBuilder<>(CheckDTO.class);
+		final CheckRolesBuilder<ICheckDTO> checkRolesBuilder = new CheckRolesBuilder<>(ICheckDTO.class);
 		checkRolesBuilder//
 				.next(i -> CheckResult.of(X1, "名稱不得空白", () -> CheckRoles.isNotNull(i.getName())),
 						parameterObject.isBeak())//

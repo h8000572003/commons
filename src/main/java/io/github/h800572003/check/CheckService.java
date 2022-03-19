@@ -31,6 +31,11 @@ public class CheckService implements ICheckService {
 	public void add(CheckRolesBuilder<?> checkRolesBuilder) {
 		this.checkHolderMap.put(checkRolesBuilder.checkMainClasss,
 				checkRolesBuilder.createCheckRegister(this.commonHandler));
+
+		for (Class<?> pClass : checkRolesBuilder.checkMainClasss.getInterfaces()) {
+			this.checkHolderMap.put(pClass, checkRolesBuilder.createCheckRegister(this.commonHandler));
+		}
+
 	}
 
 	@Override
