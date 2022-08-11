@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import com.google.common.collect.Maps;
-
 import io.github.h800572003.exception.ApBusinessException;
 
 public class TextCutBuilder<T> implements Supplier<T> {

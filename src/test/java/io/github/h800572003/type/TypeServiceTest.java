@@ -3,9 +3,8 @@ package io.github.h800572003.type;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import org.junit.jupiter.api.Test;
-
 import io.github.h800572003.exception.ApBusinessException;
+import org.junit.jupiter.api.Test;
 
 public class TypeServiceTest {
 

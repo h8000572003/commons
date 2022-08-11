@@ -6,9 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.apache.commons.lang3.StringUtils;
-
 import io.github.h800572003.exception.ApBusinessException;
+import org.apache.commons.lang3.StringUtils;
 
 public class TextByteCutHolder<T> implements Supplier<T> {
 

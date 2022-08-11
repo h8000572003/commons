@@ -2,11 +2,10 @@ package io.github.h800572003.cmd;
 
 import java.util.Map;
 
+import io.github.h800572003.exception.ApBusinessException;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Maps;
-
-import io.github.h800572003.exception.ApBusinessException;
 
 /**
  * 命令實作

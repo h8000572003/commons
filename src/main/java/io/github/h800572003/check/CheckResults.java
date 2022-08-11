@@ -7,7 +7,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
-
 import io.github.h800572003.exception.ApBusinessException;
 
 public class CheckResults implements CheckResultsContext {

@@ -1,8 +1,8 @@
 package io.github.h800572003.cmd;
 
+import io.github.h800572003.exception.ApBusinessException;
 import org.apache.commons.lang3.StringUtils;
 
-import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.properties.IPropertiesService;
 import io.github.h800572003.properties.MyProperties;
 import lombok.extern.slf4j.Slf4j;

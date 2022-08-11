@@ -6,9 +6,8 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
-
 import io.github.h800572003.exception.ApBusinessException;
+import org.apache.commons.lang3.StringUtils;
 
 public class TextPatternCutHolder<T> implements Supplier<T> {
 

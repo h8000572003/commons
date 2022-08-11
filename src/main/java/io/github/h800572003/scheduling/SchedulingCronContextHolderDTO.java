@@ -3,13 +3,12 @@ package io.github.h800572003.scheduling;
 import java.util.Calendar;
 import java.util.Objects;
 
+import io.github.h800572003.exception.ApBusinessException;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskRejectedException;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
-import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.scheduling.SpringSchedulingManager.ISpringSchedulingProperites;
 import lombok.extern.slf4j.Slf4j;
 

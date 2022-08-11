@@ -3,9 +3,9 @@ package io.github.h800572003.objects;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.github.h800572003.exception.ApBusinessException;
 import org.junit.jupiter.api.Test;
 
-import io.github.h800572003.exception.ApBusinessException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

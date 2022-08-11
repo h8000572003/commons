@@ -3,12 +3,12 @@ package io.github.h800572003.cmd;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import io.github.h800572003.exception.ApBusinessException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.properties.IPropertiesService;
 import io.github.h800572003.scheduling.ISchedulingManager;
 

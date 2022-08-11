@@ -14,3 +14,5 @@
 8. code generate
 9. slfj4 log leavel動態調整元件 0.2.3
 10.資料驗證加入
+
+0.39版本，將共用元件拆分

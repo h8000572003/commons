@@ -1,9 +1,9 @@
 package io.github.h800572003.objects;
 
+import io.github.h800572003.exception.ApBusinessException;
+
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import io.github.h800572003.exception.ApBusinessException;
 
 /**
  * Ap物件檢查
