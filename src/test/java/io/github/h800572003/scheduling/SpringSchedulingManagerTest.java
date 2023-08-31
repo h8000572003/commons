@@ -1,233 +1,237 @@
 package io.github.h800572003.scheduling;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import io.github.h800572003.exception.ApBusinessException;
-import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.util.Lists;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import io.github.h800572003.scheduling.SpringSchedulingManager.ISpringSchedulingProperites;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
-import io.github.chungtsai.cmd.TestCmdService;
-import io.github.chungtsai.cmd.TestCmdService.CmdRunnable;
-import io.github.h800572003.scheduling.SpringSchedulingManager.ISpringSchedulingProperites;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 @Slf4j
 @Disabled
 class SpringSchedulingManagerTest {
 
-	private final ISchedulingRepository schedulingRepository = Mockito.mock(ISchedulingRepository.class);
-	private final ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
-	private final MyScheduingMonitors myScheduingMonitors = Mockito.spy(new MyScheduingMonitors());
-	private final ISpringSchedulingProperites springSchedulingProperites = Mockito
-			.mock(ISpringSchedulingProperites.class);
+    public static final int SIZE = 2;
+    private final ISchedulingRepository schedulingRepository = Mockito.mock(ISchedulingRepository.class);
+    private final ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
+    private final MyScheduingMonitors myScheduingMonitors = Mockito.spy(new MyScheduingMonitors());
+    private final ISpringSchedulingProperites springSchedulingProperties = Mockito.mock(ISpringSchedulingProperites.class);
 
-	ISchedulingManager springSchedulingManager = SchedulingManagers.createSchedulingManager(schedulingRepository,
-			applicationContext, myScheduingMonitors, springSchedulingProperites);
+    private ISchedulingManager springSchedulingManager;
 
-	Sample sample = new Sample();
-	Sample2 sample2 = new Sample2();
-	Sample3 sample3 = new Sample3();
-	private int closeTimeout = 60 * 3;
 
-	SpringSchedulingManagerTest() {
+    private final TestTasks testTasks = new TestTasks(SIZE);
 
-		Mockito.when(springSchedulingProperites.isExecute()).thenReturn(true);
-		this.setCloseTimeout(closeTimeout);
-		Mockito.when(springSchedulingProperites.getDelayStart()).thenReturn(0);
+    @BeforeEach
+    public void before() {
+        springSchedulingManager = SchedulingManagers.createSchedulingManager(schedulingRepository, applicationContext, myScheduingMonitors, springSchedulingProperties);
+        setScheduling();
+        setTaskConfig();
+    }
 
-		List<IScheduingCron> list = Lists.newArrayList();
-		list.add(Sample.scheduingCron);
-		list.add(Sample2.scheduingCron);
-		list.add(Sample3.scheduingCron);
+    @AfterEach
+    public void after() {
 
-		Mockito.when(schedulingRepository.getCcheduingCronsTask()).thenReturn(list);
+        try {
+            springSchedulingManager.down();
+        } catch (Exception e) {
+            log.error("after ", e);
+        }
+    }
 
-		Mockito.when(applicationContext.getBean(Sample.class)).thenReturn(sample);
-		Mockito.when(applicationContext.getBean(Sample2.class)).thenReturn(sample2);
-		Mockito.when(applicationContext.getBean(Sample3.class)).thenReturn(sample3);
-	}
 
-	@BeforeEach
-	public void before() {
-		TestCmdService.runCmd("ON", this::up, 1);
-	}
+    private void setScheduling() {
+        Mockito.when(springSchedulingProperties.isExecute()).thenReturn(true);
+        Mockito.when(springSchedulingProperties.getCloseTimeout()).thenReturn(180);
+        Mockito.when(springSchedulingProperties.getDelayStart()).thenReturn(0);
+    }
 
-	/**
-	 * 設置中斷時間
-	 * 
-	 * @param timeout
-	 */
-	private void setCloseTimeout(int timeout) {
-		Mockito.when(springSchedulingProperites.getCloseTimeout()).thenReturn(timeout);
-	}
+    private void setTaskConfig() {
 
-	/**
-	 * 測試 (停止有等待) 1.啟動 2.等1秒 3.停機
-	 * 
-	 */
-	@Test
-	void testDown() {
 
-		List<CmdRunnable> cmdRunnables = new ArrayList<CmdRunnable>();
-		cmdRunnables.add(new CmdRunnable("DOWN_THREAD", () -> springSchedulingManager.down(), 0, 0));
-		TestCmdService.runCmd(cmdRunnables);
+        Mockito.when(schedulingRepository.getCcheduingCronsTask()).thenReturn(new ArrayList<>(testTasks.getTasks()));
 
-		showMssage();
-		assertThat(springSchedulingManager.getContext().getAll()).filteredOn(i -> i.getProgress() != 100).hasSize(0);
+        Mockito.when(applicationContext.getBean(LongTimeLoopTask.class)).thenReturn(testTasks.getTask(LongTimeLoopTask.class));
+        Mockito.when(applicationContext.getBean(LongTimeTask.class)).thenReturn(testTasks.getTask(LongTimeTask.class));
+    }
 
-		log.info("end");
-	}
 
-	@Test
-	void testWatch() {
+    /**
+     * 服務停止
+     * 1.等待時間
+     * 2.執行停機
+     * 3.確認作業發生中斷，
+     */
+    @Test
+    @DisplayName("服務停止")
+    void testDown() {
+        //GIVE
+        up();
 
-		ISchedulingContext context = springSchedulingManager.getContext();
-		showMssage();
-		assertThat(springSchedulingManager.getContext().getAll()).filteredOn(i -> i.getProgress() != 100).hasSize(0);
+        //wait 等到功能都開始執行
+        testTasks.getStatusCache().await(Status.RUNNING);
 
-		log.info("end");
-	}
 
-	/**
-	 * 停止作業堵塞1秒，然後啟動，發生Exception
-	 */
-	@Test
-	void testDowOverAndCallWhenRunnning() {
+        //WHEN
+        springSchedulingManager.down();
 
-		ErrorIsOkUncaughtExceptionHandler errorIsOkUncaughtExceptionHandler = new ErrorIsOkUncaughtExceptionHandler();
+        //wait all ok
+        testTasks.getStatusCache().await(Status.FIN);
+        showMessage();
 
-		this.setCloseTimeout(1);
+        //THEN
+        assertThat(testTasks.getTasks()).filteredOn(BaseLatchTask::isDone).hasSize(SIZE);
 
-		List<CmdRunnable> cmdRunnables = new ArrayList<CmdRunnable>();
-		cmdRunnables.add(new CmdRunnable("DOWN_THREAD", () -> springSchedulingManager.down(), 0, 0));
+        log.info("end");
+    }
 
-		CmdRunnable cmdRunnable = new CmdRunnable("UP_THREAD", () -> springSchedulingManager.up(), 0, 2);
-		cmdRunnable.setUncaughtExceptionHandler(errorIsOkUncaughtExceptionHandler);
-		cmdRunnables.add(cmdRunnable);
-		TestCmdService.runCmd(cmdRunnables);
 
-		showMssage();
-		assertThat(springSchedulingManager.getContext().getAll()).filteredOn(i -> i.getProgress() != 100)
-				.hasSizeGreaterThan(0);
-		assertThat(errorIsOkUncaughtExceptionHandler.messages).contains("任務尚未完全停止，請稍後");
-		log.info("end");
-	}
+    @Test
+    @DisplayName("測試重複啟動")
+    void testUp() {
+        try {
+            //GIVE
+            up();
 
-	private void showMssage() {
-		springSchedulingManager.getContext().getAll().stream().forEach(i -> System.out
-				.printf("code:%s,progress:%d,status:%s \n", i.getCode(), i.getProgress(), i.getStatus()));
-	}
+            //WHEN
+            springSchedulingManager.up();
+            fail("should exception");
+        } catch (ApBusinessException e) {
 
-	private void up() {
-		springSchedulingManager.propertiesChange();
-		springSchedulingManager.startAll();
-	}
+            //THEN
+            assertThat(e).hasMessage("服務已啟動");
+        }
 
-	/**
-	 * 測試 cacnel 不會堵塞，因此至少sample1狀態為100
-	 * 
-	 * 
-	 *
-	 */
-	@Test
-	// @Timeout(unit = TimeUnit.SECONDS, value = 20)
-	void testStartIntrupt() {
+    }
 
-		List<CmdRunnable> cmdRunnables = new ArrayList<CmdRunnable>();
-		cmdRunnables.add(new CmdRunnable("CNACEL_1", () -> springSchedulingManager.cancelAll(), 1, 0));
-		cmdRunnables.add(new CmdRunnable("CNACEL_2", () -> springSchedulingManager.cancelAll(), 1, 0));
+    @Test
+    @DisplayName("關閉任務後，直接啟動任務")
+    void testWhenDownAndStartTask() {
 
-		TestCmdService.runCmd(cmdRunnables);
-		showMssage();
+        try {
+            //GIVE
+            up();
 
-		Optional<ISchedulingItemContext> findAny = springSchedulingManager.getContext().getAll().stream()
-				.filter(i -> i.getCode().equals(Sample.class.getSimpleName())).findAny();
+            springSchedulingManager.down(); //當服務結束後
 
-		assertThat(findAny.get().getProgress()).isEqualTo(100);
+            testTasks.getStatusCache().await(Status.FIN);
 
-	}
+            //WHEN
+            springSchedulingManager.start(LongTimeLoopTask.class.getSimpleName()); //再度啟動特定任務
+            //GIVE
+            fail("should exception");
+        } catch (ApBusinessException e) {
+            //THEN
+            assertThat(e).hasMessageContaining("已關機不提供作業");
+        }
+    }
 
-	class ErrorIsOkUncaughtExceptionHandler implements UncaughtExceptionHandler {
-		boolean withException = false;
+    @Test
+    @DisplayName("關閉任務後[特定]任務，再度啟動[特定]，執行完[特定任務]業進度達100%")
+    void test_cancel_special_then_start() {
 
-		List<String> messages = new ArrayList<String>();
+        //GIVE
+        up();
 
-		@Override
-		public void uncaughtException(Thread t, Throwable e) {
-			messages.add(e.getMessage());
-			log.info("get execption thread:{}", t, e);
-			withException = true;
 
-		}
+        final String taskCode = LongTimeLoopTask.class.getSimpleName();//特定任務
 
-	}
+        springSchedulingManager.cancel(taskCode);//中斷任務
 
-	/**
-	 * 重複呼叫啟動，檢查兩次中斷紀錄 1.啟動服務 2.連續啟動同樣服務 3.兩個都會發生錯誤 4.取得兩次錯誤紀錄
-	 */
-	@Test
-	// @Timeout(unit = TimeUnit.SECONDS, value = 15)
-	void testStartStart() {
+        log.info("first 1 waiting");
+        testTasks.getStatusCache().await(Status.FIN);
 
-		ErrorIsOkUncaughtExceptionHandler errorIsOkUncaughtExceptionHandler = new ErrorIsOkUncaughtExceptionHandler();
+        //WHEN
+        springSchedulingManager.start(taskCode); //再度啟動特定任務
+        //GIVE
+        log.info("first 2 waiting");
+        testTasks.getTask(LongTimeLoopTask.class).awaitSelf();
 
-		List<CmdRunnable> cmdRunnables = new ArrayList<CmdRunnable>();
-		CmdRunnable cmdRunnable1 = new CmdRunnable("START_1",
-				() -> springSchedulingManager.start(Sample.class.getSimpleName()));
-		cmdRunnable1.setUncaughtExceptionHandler(errorIsOkUncaughtExceptionHandler);
-		CmdRunnable cmdRunnable2 = new CmdRunnable("START_2",
-				() -> springSchedulingManager.start(Sample.class.getSimpleName()));
-		cmdRunnable2.setUncaughtExceptionHandler(errorIsOkUncaughtExceptionHandler);
-		cmdRunnables.add(cmdRunnable1);
-		cmdRunnables.add(cmdRunnable2);
 
-		TestCmdService.runCmd(cmdRunnables);
+        LongTimeLoopTask task = testTasks.getTask(LongTimeLoopTask.class);
+        log.info("task:{}", task.isDoneOk());
 
-		assertThat(errorIsOkUncaughtExceptionHandler.withException).isTrue();
-		assertThat(errorIsOkUncaughtExceptionHandler.messages).hasSize(2);
-		assertThat(errorIsOkUncaughtExceptionHandler.messages).matches(i -> StringUtils.contains(i.get(0), "已啟動，請先關閉"));
-		log.info("end");
-	}
+        showMessage();
+        assertThat(task.isDone()).isTrue();
+    }
 
-	/**
-	 * 1.啟動服務 2.重新整理該排成 3.get Exception 請先關閉作業
-	 */
-	@Test
-	// @Timeout(unit = TimeUnit.SECONDS, value = 15)
-	void testOnRresh() {
 
-		assertThatExceptionOfType(ApBusinessException.class).isThrownBy(() -> {
-			this.springSchedulingManager.refresh(Sample.class.getSimpleName());
-		}).withMessageContaining("請先關閉");
-		// assertThat(springSchedulingManager.getContext().getRunningCount()).isEqualTo(2);
-		log.info("end");
-	}
+    @DisplayName("當任務執行中當服務中斷後，進行重整資訊")
+    @Test
+    void testFreshWhenCancel() {
+        String taskCode = LongTimeLoopTask.class.getSimpleName();//特定任務
+        up();
 
-	/**
-	 * 排程 + runOnce同時呼叫，計數表示僅同一功能進行執行
-	 */
-	@Test
-	// @Timeout(unit = TimeUnit.SECONDS, value = 15)
-	void testRunOnce() {
 
-		TestCmdService.runCmd("RUNONCE_1", () -> springSchedulingManager.runOnce(Sample.class.getSimpleName()), 5);
-		TestCmdService.runCmd("RUNONCE_2", () -> springSchedulingManager.runOnce(Sample.class.getSimpleName()));
+        springSchedulingManager.cancel(taskCode);//中斷任務
 
-		this.showMssage();
-		assertThat(Sample.atomicInteger.get()).isEqualTo(1);
+        testTasks.getStatusCache().await(Status.FIN);
 
-		log.info("end");
-	}
+        springSchedulingManager.refresh(taskCode);
+
+
+        Mockito.verify(schedulingRepository, Mockito.times(1)).getCcheduingCronsTask(taskCode);
+
+    }
+
+    @DisplayName("當任務執行中啟動服務，重整排程資訊")
+    @Test
+    void testFreshWhenUp() {
+        //give
+        //1.啟動服務
+        up();
+
+        try {
+
+            //when 重新整理該任務資料
+            this.springSchedulingManager//
+                    .refresh(LongTimeLoopTask.class.getSimpleName());
+
+            fail("should exception");
+        } catch (ApBusinessException e) {
+
+            //then
+            assertThat(e).hasMessageContaining("請先關閉");
+        }
+
+
+    }
+
+    @DisplayName("當任務執行中啟動服務，重整排程資訊")
+    @Test
+    void testOnce() {
+        springSchedulingManager.propertiesChange();
+
+        this.springSchedulingManager//
+                .runOnce(LongTimeLoopTask.class.getSimpleName());
+
+        this.springSchedulingManager//
+                .runOnce(LongTimeLoopTask.class.getSimpleName());
+
+        LongTimeLoopTask task = testTasks.getTask(LongTimeLoopTask.class);
+        task.awaitSelf();
+        task.awaitSelf();
+
+
+        assertThat(testTasks.getTask(LongTimeLoopTask.class).isDoneOk()).isTrue();
+    }
+
+
+    private void showMessage() {
+        springSchedulingManager.getContext().getAll()
+                .forEach(i -> log.info("code:{},progress:{},status:{} ", i.getCode(), i.getProgress(), i.getStatus()));
+    }
+
+    private void up() {
+        springSchedulingManager.propertiesChange();
+        springSchedulingManager.startAll();
+    }
+
 
 }

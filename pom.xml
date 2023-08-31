@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>io.github.h8000572003</groupId>
 	<artifactId>commons</artifactId>
-	<version>0.3.9</version>
+	<version>0.4.0</version>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<packaging>jar</packaging>
 	<description>commons utils</description>
@@ -124,6 +124,12 @@
 			<artifactId>mockito-all</artifactId>
 			<scope>test</scope>
 			<version>${mockito-all.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
+			<version>4.2.0</version>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
