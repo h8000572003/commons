@@ -72,4 +72,9 @@ public interface ISchedulingManager {
 	 * 排程服務啟動
 	 */
 	void up();
+
+	/**
+	 * 關閉服務，安全停止
+	 */
+	void shutdown();
 }

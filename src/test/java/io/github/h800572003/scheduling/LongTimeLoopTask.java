@@ -10,8 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LongTimeLoopTask extends BaseLatchTask implements IScheduingTask {
 
 
-    private final int loopTime;
-
+    private final int loopTime;//loop times
 
 
     public LongTimeLoopTask(StatusCache statusCache) {
@@ -32,6 +31,7 @@ public class LongTimeLoopTask extends BaseLatchTask implements IScheduingTask {
                 break;
             }
         }
+        incrementOkTimes();
         this.setDoneOk(true);
         log.info("end job");
 

@@ -103,4 +103,5 @@ public interface ISchedulingItemContext {
 	 */
 	int getProgress();
 
+	void shutdown();
 }
