@@ -3,7 +3,6 @@ package io.github.h800572003.scheduling;
 import java.util.Calendar;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskRejectedException;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
@@ -19,9 +18,9 @@ public class SchedulingDelayContextHolderDTO extends AbstractSchedulingCronConte
 	ISchedulingRepository schedulingRepository;
 	ISchedulingContext schedulingContext;
 	public SchedulingDelayContextHolderDTO(IScheduingDelay medidata, TaskScheduler taskScheduler,
-			IScheduingTask task, IScheduingMonitor scheduingTaskLog,
-			ISchedulingRepository schedulingRepository, ISchedulingContext schedulingContext) {
-		super(medidata, taskScheduler, task, scheduingTaskLog, schedulingContext);
+										   IScheduingTask task, IScheduingMonitor scheduingTaskLog,
+										   ISchedulingRepository schedulingRepository, ISchedulingContext schedulingContext, boolean isTaskCancel) {
+		super(medidata, taskScheduler, task, scheduingTaskLog, schedulingContext,isTaskCancel);
 		this.medidata = medidata;
 		this.schedulingRepository = schedulingRepository;
 		this.schedulingContext=schedulingContext;

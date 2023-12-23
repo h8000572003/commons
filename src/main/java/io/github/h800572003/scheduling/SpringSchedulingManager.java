@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -33,6 +34,9 @@ public class SpringSchedulingManager implements ISchedulingManager {
 	private ScheduledTaskRegistrar taskRegistrar;
 
 	private int extractThreadSize = 2;
+
+	@Value("${backend.task.cancel:false}")
+	private boolean isTaskCancel;
 
 	private SpringSchedulingHook springSchedulingHook = new BalankSpringSchedulingHook();
 	private final ISpringSchedulingProperites springSchedulingProperites;
@@ -142,7 +146,7 @@ public class SpringSchedulingManager implements ISchedulingManager {
 		}
 		log.info("add task:{} name:{} cron:({})", code.getCode(), code.getName(), code.getCon());
 		this.add(code, new SchedulingCronContextHolderDTO(code, scheduler, applicationContext.getBean(code.getPClass()),
-				myScheduingMonitors, repository, getContext()));
+				myScheduingMonitors, repository, getContext(),isTaskCancel));
 	}
 
 	protected void add(IScheduingCron code, ISchedulingItemContext schedulingItemContext) {
@@ -155,7 +159,7 @@ public class SpringSchedulingManager implements ISchedulingManager {
 		}
 		log.info("add task:{} name:{} cron:({})", code.getCode(), code.getName(), code.getCron());
 		this.add(code, new SchedulingDelayContextHolderDTO(code, scheduler,
-				applicationContext.getBean(code.getPClass()), myScheduingMonitors, repository, getContext()));
+				applicationContext.getBean(code.getPClass()), myScheduingMonitors, repository, getContext(),isTaskCancel));
 	}
 
 	protected void add(IScheduingDelay code, ISchedulingItemContext schedulingItemContext) {
@@ -177,7 +181,7 @@ public class SpringSchedulingManager implements ISchedulingManager {
 			}
 		};
 		scheduler.setWaitForTasksToCompleteOnShutdown(true);
-		scheduler.setAwaitTerminationSeconds(30);
+		scheduler.setAwaitTerminationSeconds(springSchedulingProperites.getCloseTimeout());
 		scheduler.setPoolSize(size);
 		scheduler.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
 		scheduler.setThreadFactory(customizableThreadFactory);
