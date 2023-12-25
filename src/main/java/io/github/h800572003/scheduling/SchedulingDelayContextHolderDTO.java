@@ -19,7 +19,7 @@ public class SchedulingDelayContextHolderDTO extends AbstractSchedulingCronConte
 	ISchedulingContext schedulingContext;
 	public SchedulingDelayContextHolderDTO(IScheduingDelay medidata, TaskScheduler taskScheduler,
 										   IScheduingTask task, IScheduingMonitor scheduingTaskLog,
-										   ISchedulingRepository schedulingRepository, ISchedulingContext schedulingContext, boolean isTaskCancel) {
+										   ISchedulingRepository schedulingRepository, ISchedulingContext schedulingContext, ISchedulingConfigRepository isTaskCancel) {
 		super(medidata, taskScheduler, task, scheduingTaskLog, schedulingContext,isTaskCancel);
 		this.medidata = medidata;
 		this.schedulingRepository = schedulingRepository;

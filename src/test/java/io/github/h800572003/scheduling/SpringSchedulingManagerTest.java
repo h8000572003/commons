@@ -33,7 +33,7 @@ class SpringSchedulingManagerTest {
 			.mock(ISpringSchedulingProperites.class);
 
 	ISchedulingManager springSchedulingManager = SchedulingManagers.createSchedulingManager(schedulingRepository,
-			applicationContext, myScheduingMonitors, springSchedulingProperites);
+			applicationContext, myScheduingMonitors, springSchedulingProperites,new FakeSchedulingConfigRepository());
 
 	Sample sample = new Sample();
 	Sample2 sample2 = new Sample2();
@@ -56,6 +56,14 @@ class SpringSchedulingManagerTest {
 		Mockito.when(applicationContext.getBean(Sample.class)).thenReturn(sample);
 		Mockito.when(applicationContext.getBean(Sample2.class)).thenReturn(sample2);
 		Mockito.when(applicationContext.getBean(Sample3.class)).thenReturn(sample3);
+	}
+
+	static class FakeSchedulingConfigRepository implements ISchedulingConfigRepository{
+
+		@Override
+		public boolean getCancel(AbstractSchedulingCronContextHolder abstractSchedulingCronContextHolder) {
+			return false;
+		}
 	}
 
 	@BeforeEach

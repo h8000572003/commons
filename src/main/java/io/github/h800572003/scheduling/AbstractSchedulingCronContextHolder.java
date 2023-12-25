@@ -29,21 +29,21 @@ public abstract class AbstractSchedulingCronContextHolder
     protected static byte[] UP_LOCK = new byte[]{};
     private int progress = -1;
 
-    protected final boolean isTaskCancel;
+    protected final ISchedulingConfigRepository schedulingConfigRepository;
 
     public AbstractSchedulingCronContextHolder(IScheduingKey scheduingKey, TaskScheduler taskScheduler,
-                                               IScheduingTask scheduingTask, IScheduingMonitor monitors, ISchedulingContext mainContext, boolean isTaskCancel) {
+                                               IScheduingTask scheduingTask, IScheduingMonitor monitors, ISchedulingContext mainContext, ISchedulingConfigRepository schedulingConfigRepository) {
         this.scheduingKey = scheduingKey;
         this.taskScheduler = taskScheduler;
         this.scheduingTask = scheduingTask;
         this.monitors = monitors;
         this.mainContext = mainContext;
-        this.isTaskCancel = isTaskCancel;
+        this.schedulingConfigRepository = schedulingConfigRepository;
 
     }
 
     @Override
-    public void runOnce() {
+    public synchronized void runOnce() {
         log.info("call runOnce code:{} ", this.scheduingKey.getCode());
         if (this.scheduledFuture == null) {
             this.scheduledFuture = this.taskScheduler.schedule(() -> {
@@ -73,7 +73,7 @@ public abstract class AbstractSchedulingCronContextHolder
                 log.info("call {}服務中斷", this.scheduingKey.getCode());
                 if (this.scheduledFuture != null && !this.scheduledFuture.isCancelled()) {
                     log.info("call cancel code:{} ", this.scheduingKey.getCode());
-                    final boolean cancel = this.scheduledFuture.cancel(isTaskCancel);
+                    final boolean cancel = this.scheduledFuture.cancel(schedulingConfigRepository.getCancel(this));
                     if (cancel && !this.status.equals(SchedulingStatusCodes.RUNNNIG)) {
                         termiat();
                     }

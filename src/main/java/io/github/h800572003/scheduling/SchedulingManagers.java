@@ -14,12 +14,12 @@ public class SchedulingManagers {
 
 	static ISchedulingManager createSchedulingManager(ISchedulingRepository schedulingRepository,
 			ApplicationContext applicationContext, IScheduingMonitor myScheduingMonitors,
-			ISpringSchedulingProperites springSchedulingProperites) {
+			ISpringSchedulingProperites springSchedulingProperites,ISchedulingConfigRepository schedulingConfigRepository) {
 		Objects.requireNonNull(schedulingRepository);
 		Objects.requireNonNull(applicationContext);
 		Objects.requireNonNull(myScheduingMonitors);
 		Objects.requireNonNull(springSchedulingProperites);
 		return new SpringSchedulingManager(schedulingRepository, applicationContext, myScheduingMonitors,
-				springSchedulingProperites);
+				springSchedulingProperites,schedulingConfigRepository);
 	}
 }
