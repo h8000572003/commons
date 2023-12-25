@@ -12,6 +12,10 @@ public class SchedulingConfigRepository implements ISchedulingConfigRepository {
     @Value("${backend.task.interrupt.codes:}#{T(java.util.Collections).emptyList()}")
     private List<String> interruptTask;
 
+
+    @Value("${backend.task.double-click-one:true}")
+    private boolean isDoubleClick;
+
     @Override
     public boolean getCancel(AbstractSchedulingCronContextHolder abstractSchedulingCronContextHolder) {
         if (interruptTask.contains(abstractSchedulingCronContextHolder.getCode())) {
@@ -20,5 +24,8 @@ public class SchedulingConfigRepository implements ISchedulingConfigRepository {
         return isTaskCancel;
     }
 
-
+    @Override
+    public boolean isDoubleClickOneRunningCancel() {
+        return isDoubleClick;
+    }
 }
