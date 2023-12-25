@@ -84,6 +84,7 @@ public abstract class AbstractSchedulingCronContextHolder
                         termiat();
                     }
                 } else {
+                    //cancel
                     log.info("{}服務已關閉", this.scheduingKey.getCode());
                 }
             });
