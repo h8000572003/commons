@@ -1,31 +1,47 @@
 package io.github.h800572003.event.deiven;
 
+import com.google.common.collect.Maps;
+import io.github.h800572003.exception.ApBusinessException;
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Map;
 
-import com.google.common.collect.Maps;
+public class DynamicRouter<T extends IMessage> implements IDynamicRouter<IMessage> {
 
-import io.github.h800572003.exception.ApBusinessException;
+    @SuppressWarnings("rawtypes")
+    private final Map<String, IChannel> map = Maps.newConcurrentMap();
 
-public class DynamicRouter implements IDynamicRouter<IMessage> {
+    private  IChannel defaultChannel = new UnregisterChannel();
 
-	@SuppressWarnings("rawtypes")
-	private Map<Class<? extends IMessage>, IChannel> map = Maps.newConcurrentMap();
 
-	@Override
-	public void registerChannel(Class<? extends IMessage> messageType, IChannel<? extends IMessage> channel) {
-		map.put(messageType, channel);
+    public void setDefaultChannel(IChannel defaultChannel) {
+        this.defaultChannel = defaultChannel;
+    }
 
-	}
+    @Override
+    public void registerChannelByName(String message, IChannel<IMessage> channel) {
+        if (StringUtils.isBlank(message)) {
+            throw new ApBusinessException("message is null");
+        }
+        map.put(message, channel);
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T2 extends IMessage> void dispatch(T2 message) {
-		if (this.map.containsKey(message.getClass())) {
-			this.map.get(message.getClass()).dispatch(message);
-		} else {
-			throw new ApBusinessException("not match channel:{0}", message);
-		}
+    static class UnregisterChannel implements IChannel {
 
-	}
+        @Override
+        public void dispatch(IMessage message) {
+            throw new ApBusinessException("Unregister Channel channel:{0}", message.getTypeKey());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends IMessage> void dispatch(T message) {
+        String typeKey = message.getTypeKey();
+        IChannel orDefault = this.map.getOrDefault(typeKey, defaultChannel);
+        orDefault.dispatch(message);
+
+
+    }
 
 }

@@ -21,6 +21,8 @@ public class ClassCodgen {
 	public ClassCodgen(String name) {
 		super();
 		this.name = name;
+
+		
 	}
 
 	public MethodCodegen createMethod(String name) {
