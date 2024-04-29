@@ -216,7 +216,6 @@ public abstract class AbstractSchedulingCronContextHolder
         synchronized (UP_LOCK) {
             if (isUp) {
             } else {
-                this.isUp = true;
                 throw new CancelExecpetion("程式中斷");
             }
         }
