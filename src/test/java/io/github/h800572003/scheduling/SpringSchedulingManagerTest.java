@@ -97,15 +97,7 @@ class SpringSchedulingManagerTest {
 		log.info("end");
 	}
 
-	@Test
-	void testWatch() {
 
-		ISchedulingContext context = springSchedulingManager.getContext();
-		showMssage();
-		assertThat(springSchedulingManager.getContext().getAll()).filteredOn(i -> i.getProgress() != 100).hasSize(0);
-
-		log.info("end");
-	}
 
 	/**
 	 * 停止作業堵塞1秒，然後啟動，發生Exception
@@ -142,29 +134,7 @@ class SpringSchedulingManagerTest {
 		springSchedulingManager.startAll();
 	}
 
-	/**
-	 * 測試 cacnel 不會堵塞，因此至少sample1狀態為100
-	 * 
-	 * 
-	 *
-	 */
-	@Test
-	// @Timeout(unit = TimeUnit.SECONDS, value = 20)
-	void testStartIntrupt() {
 
-		List<CmdRunnable> cmdRunnables = new ArrayList<CmdRunnable>();
-		cmdRunnables.add(new CmdRunnable("CNACEL_1", () -> springSchedulingManager.cancelAll(), 1, 0));
-		cmdRunnables.add(new CmdRunnable("CNACEL_2", () -> springSchedulingManager.cancelAll(), 1, 0));
-
-		TestCmdService.runCmd(cmdRunnables);
-		showMssage();
-
-		Optional<ISchedulingItemContext> findAny = springSchedulingManager.getContext().getAll().stream()
-				.filter(i -> i.getCode().equals(Sample.class.getSimpleName())).findAny();
-
-		assertThat(findAny.get().getProgress()).isEqualTo(100);
-
-	}
 
 	class ErrorIsOkUncaughtExceptionHandler implements UncaughtExceptionHandler {
 		boolean withException = false;

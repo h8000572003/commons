@@ -32,6 +32,7 @@ public abstract class AbstractSchedulingCronContextHolder
     private int progress = -1;
 
     protected final ISchedulingConfigRepository schedulingConfigRepository;
+    protected final ISchedulingProgress schedulingProgress;
 
     public AbstractSchedulingCronContextHolder(IScheduingKey scheduingKey, TaskScheduler taskScheduler,
                                                IScheduingTask scheduingTask, IScheduingMonitor monitors, ISchedulingContext mainContext, ISchedulingConfigRepository schedulingConfigRepository) {
@@ -41,6 +42,7 @@ public abstract class AbstractSchedulingCronContextHolder
         this.monitors = monitors;
         this.mainContext = mainContext;
         this.schedulingConfigRepository = schedulingConfigRepository;
+        this.schedulingProgress = new SchedulingProgress(this);
 
     }
 
@@ -222,11 +224,9 @@ public abstract class AbstractSchedulingCronContextHolder
 
     @Override
     public void checkUp() throws CancelExecpetion {
-        synchronized (UP_LOCK) {
-            if (isUp.get()) {
-            } else {
-                throw new CancelExecpetion("程式中斷");
-            }
+        if (isUp.get()) {
+        } else {
+            throw new CancelExecpetion("程式中斷");
         }
     }
 
@@ -248,5 +248,10 @@ public abstract class AbstractSchedulingCronContextHolder
     @Override
     public int getProgress() {
         return this.progress;
+    }
+
+    @Override
+    public ISchedulingProgress getSchedulingProgress() {
+        return schedulingProgress;
     }
 }

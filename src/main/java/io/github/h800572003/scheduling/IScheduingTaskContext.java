@@ -29,4 +29,6 @@ public interface IScheduingTaskContext {
     void updateMessage(String message);
 
     void setProgress(int progress);
+
+    ISchedulingProgress getSchedulingProgress();
 }
