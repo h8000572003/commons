@@ -4,9 +4,29 @@ import io.github.h800572003.exception.CancelExecpetion;
 
 public interface IScheduingTaskContext {
 
-	void checkUp() throws CancelExecpetion;
 
-	void updateMessage(String message);
+    /**
+     * 檢查有無啟動
+     *
+     * @throws CancelExecpetion
+     */
+    void checkUp() throws CancelExecpetion;
 
-	void setProgress(int progress);
+    /**
+     * 是否執行中
+     *
+     * @return
+     */
+    default boolean isRunning() {
+        try {
+            this.checkUp();
+            return true;
+        } catch (CancelExecpetion e) {
+            return false;
+        }
+    }
+
+    void updateMessage(String message);
+
+    void setProgress(int progress);
 }

@@ -11,6 +11,7 @@ import org.springframework.scheduling.TaskScheduler;
 import java.util.Date;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 public abstract class AbstractSchedulingCronContextHolder
@@ -26,7 +27,7 @@ public abstract class AbstractSchedulingCronContextHolder
     protected SchedulingStatusCodes status = SchedulingStatusCodes.IDLE;
     protected IScheduingMonitor monitors;
     protected ISchedulingContext mainContext;
-    protected boolean isUp = true;
+    protected AtomicBoolean isUp = new AtomicBoolean(true);
     protected static byte[] UP_LOCK = new byte[]{};
     private int progress = -1;
 
@@ -57,7 +58,7 @@ public abstract class AbstractSchedulingCronContextHolder
         } else {
             if (schedulingConfigRepository.isDoubleClickOneRunningCancel()) {
                 oneScheduledFuture.cancel(schedulingConfigRepository.getCancel(this));
-            }else{
+            } else {
                 throw new ApBusinessException("服務已啟動，不執行一次執行");
             }
 
@@ -222,27 +223,17 @@ public abstract class AbstractSchedulingCronContextHolder
     @Override
     public void checkUp() throws CancelExecpetion {
         synchronized (UP_LOCK) {
-            if (isUp) {
+            if (isUp.get()) {
             } else {
-                this.isUp = true;
                 throw new CancelExecpetion("程式中斷");
             }
         }
     }
 
     protected void setUp(boolean isUp) {
-        synchronized (UP_LOCK) {
-            this.isUp = isUp;
-        }
-
+        this.isUp.set(isUp);
     }
 
-    protected boolean getUp() {
-        synchronized (UP_LOCK) {
-            return this.isUp;
-        }
-
-    }
 
     @Override
     public void setProgress(int progress) {
