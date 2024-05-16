@@ -125,5 +125,10 @@ class SchedulingProgressTest {
         public ISchedulingProgress getSchedulingProgress() {
             return null;
         }
+
+        @Override
+        public <T> T getService(Class<T> pclass) {
+            return null;
+        }
     }
 }

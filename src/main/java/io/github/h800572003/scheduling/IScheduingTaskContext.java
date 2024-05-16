@@ -1,5 +1,6 @@
 package io.github.h800572003.scheduling;
 
+import io.github.h800572003.exception.ApBusinessException;
 import io.github.h800572003.exception.CancelExecpetion;
 
 public interface IScheduingTaskContext {
@@ -32,5 +33,7 @@ public interface IScheduingTaskContext {
 
     ISchedulingProgress getSchedulingProgress();
 
-    <T> T getService(Class<T> pclass);
+    default <T> T getService(Class<T> pclass) {
+        throw new ApBusinessException("not implemented");
+    }
 }
