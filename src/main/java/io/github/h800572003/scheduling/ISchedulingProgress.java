@@ -8,13 +8,5 @@ public interface ISchedulingProgress {
 
     void reset();
 
-    /**
-     * 取得註冊服務
-     * @param pclass
-     * @return
-     * @param <T>
-     */
-    default <T> T getService(Class<T> pclass) {
-        return null;
-    }
+
 }

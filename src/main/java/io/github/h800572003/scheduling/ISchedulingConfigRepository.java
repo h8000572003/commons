@@ -26,4 +26,14 @@ public interface ISchedulingConfigRepository {
     default boolean isDoubleClickOneRunningCancel() {
         return false;
     }
+
+    /**
+     * 取得註冊服務
+     * @param pclass
+     * @return
+     * @param <T>
+     */
+    default <T> T getService(Class<T> pclass) {
+        return null;
+    }
 }

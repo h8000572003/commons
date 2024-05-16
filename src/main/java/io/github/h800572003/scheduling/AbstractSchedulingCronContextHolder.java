@@ -257,6 +257,6 @@ public abstract class AbstractSchedulingCronContextHolder
 
     @Override
     public <T> T getService(Class<T> pclass) {
-        return schedulingProgress.getService(pclass);
+        return schedulingConfigRepository.getService(pclass);
     }
 }
