@@ -31,4 +31,6 @@ public interface IScheduingTaskContext {
     void setProgress(int progress);
 
     ISchedulingProgress getSchedulingProgress();
+
+    <T> T getService(Class<T> pclass);
 }
