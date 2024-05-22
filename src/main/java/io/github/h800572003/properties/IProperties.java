@@ -66,4 +66,5 @@ public interface IProperties {
 		}
 		return false;
 	}
+
 }

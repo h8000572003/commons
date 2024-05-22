@@ -15,4 +15,5 @@
 9. slfj4 log leavel動態調整元件 0.2.3
 10. fix  DynamicRouter bug 0.2.8.3
 11. 加入功能註冊服務
+12. PropertiesUpdateListener 加入 刪除與清除通知
 

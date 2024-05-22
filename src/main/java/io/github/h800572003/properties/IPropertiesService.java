@@ -4,94 +4,111 @@ import java.util.List;
 
 /**
  * 代碼
- * 
- * @author andy tsai
  *
+ * @author andy tsai
  */
 public interface IPropertiesService {
 
-	/**
-	 * 加入代碼
-	 * 
-	 * @param code
-	 * @param name
-	 * @param holder
-	 */
-	void addCode(String code, String name, IPropertieServiceHolder holder);
+    /**
+     * 加入代碼
+     *
+     * @param code
+     * @param name
+     * @param holder
+     */
+    void addCode(String code, String name, IPropertieServiceHolder holder);
 
-	/**
-	 * 取得所有代碼
-	 * 
-	 * @return
-	 */
-	List<Code> getCategory();
+    /**
+     * 取得所有代碼
+     *
+     * @return
+     */
+    List<Code> getCategory();
 
-	interface PropertiesUpdateListener {
-		void update(String category, IProperties properties);
-	}
+    interface PropertiesUpdateListener {
+        /**
+         *
+         * @param category 資料更新
+         * @param properties 代碼
+         */
+        void update(String category, IProperties properties);
 
-	/**
-	 * 代碼異動監聽
-	 * 
-	 * @param propertiesUpdateListener
-	 */
-	void addListener(PropertiesUpdateListener propertiesUpdateListener);
 
-	/**
-	 * 取得多筆
-	 * 
-	 * @param category
-	 *            類別
-	 * @return
-	 */
-	public List<IProperties> getPropertie(String category);
+        /**
+         *
+         * @param status 更新狀態
+         * @param category 類別
+         * @param code 代碼 若null表示 不分code
+         */
+        default void update(PropertiesUpdateStatus status, String category, String code) {
+        }
 
-	/**
-	 * 
-	 * @param category
-	 *            類別
-	 * @param key
-	 * @return
-	 */
-	public IProperties getValue(String category, String key);
+    }
 
-	/**
-	 * 更新
-	 * 
-	 * @param category
-	 * @param properties
-	 */
-	public void saveOrUpdate(String category, IProperties properties);
+    public enum PropertiesUpdateStatus {
+        DELETE,
+        CLEAR
+    }
 
-	/**
-	 * 清除該category
-	 * 
-	 * @param category
-	 */
-	public void clear(String category);
+    /**
+     * 代碼異動監聽
+     *
+     * @param propertiesUpdateListener
+     */
+    void addListener(PropertiesUpdateListener propertiesUpdateListener);
 
-	/**
-	 * 全部清除
-	 */
-	public void clear();
+    /**
+     * 取得多筆
+     *
+     * @param category 類別
+     * @return
+     */
+    public List<IProperties> getPropertie(String category);
 
-	/**
-	 * 刪除該category下之code
-	 * 
-	 * @param category
-	 * @param code
-	 */
-	public void delete(String category, String code);
+    /**
+     * @param category 類別
+     * @param key
+     * @return
+     */
+    public IProperties getValue(String category, String key);
 
-	/**
-	 * 清除該category
-	 * 
-	 * @param category
-	 */
-	public void delete(String category);
+    /**
+     * 更新
+     *
+     * @param category
+     * @param properties
+     */
+    public void saveOrUpdate(String category, IProperties properties);
 
-	/**
-	 * 更新所有代碼檔案
-	 */
-	void update();
+    /**
+     * 清除該category
+     *
+     * @param category
+     */
+    public void clear(String category);
+
+    /**
+     * 全部清除
+     */
+    public void clear();
+
+    /**
+     * 刪除該category下之code
+     *
+     * @param category
+     * @param code
+     */
+    public void delete(String category, String code);
+
+    /**
+     * 清除該category
+     *
+     * @param category
+     */
+    public void delete(String category);
+
+    /**
+     * 更新所有代碼檔案
+     */
+    void update();
 }

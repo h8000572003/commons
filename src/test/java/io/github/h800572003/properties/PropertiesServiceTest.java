@@ -9,14 +9,7 @@ import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;
 
-import io.github.h800572003.properties.Code;
-import io.github.h800572003.properties.IPropertieServiceHolder;
-import io.github.h800572003.properties.IProperties;
-import io.github.h800572003.properties.IPropertiesRepository;
-import io.github.h800572003.properties.IPropertiesService;
-import io.github.h800572003.properties.MyProperties;
-import io.github.h800572003.properties.PropertiesHolderBuilder;
-import io.github.h800572003.properties.PropertiesService;
+
 import io.github.h800572003.properties.IPropertiesService.PropertiesUpdateListener;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,7 +32,6 @@ class PropertiesServiceTest {
 		@Override
 		public void update(String category, IProperties properties) {
 			log.info("updae: {},properties:{}", category, properties);
-
 		}
 	});
 
@@ -118,7 +110,11 @@ class PropertiesServiceTest {
 		List<IProperties> propertie = propertiesService.getPropertie(CATEGORY);
 		assertThat(propertie).hasSize(1);
 		assertThat(propertie.get(0)).matches(t -> t.equals(myProperties));
+		Mockito.verify(propertiesUpdateListener, Mockito.times(1)).update(Mockito.eq(IPropertiesService.PropertiesUpdateStatus.DELETE), Mockito.eq(CATEGORY), Mockito.isNull());
+
 	}
+
+
 
 	@Test
 	void testClear() {
