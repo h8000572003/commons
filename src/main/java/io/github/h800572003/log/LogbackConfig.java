@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP;
+import ch.qos.logback.core.spi.ScanException;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +20,6 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.FileAppender;
 import ch.qos.logback.core.rolling.RollingFileAppender;
-import ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 import ch.qos.logback.core.util.FileSize;
 import ch.qos.logback.core.util.OptionHelper;
@@ -56,18 +57,22 @@ public class LogbackConfig {
 
 	public void setup() {
 		for (final Map.Entry<String, String> entry : this.packageNameMap.entrySet()) {
-			this.appender(entry.getKey(), entry.getValue(), additive);
-		}
+            try {
+                this.appender(entry.getKey(), entry.getValue(), additive);
+            } catch (ScanException e) {
+                throw new RuntimeException(e);
+            }
+        }
 	}
 
-	private void appender(String name, String pClass, boolean additive) {
+	private void appender(String name, String pClass, boolean additive) throws ScanException {
 		final Logger log = (Logger) LoggerFactory.getLogger(pClass);
 		log.setAdditive(additive);
 		final LoggerContext loggerContext = log.getLoggerContext();
 		log.addAppender(createAppender(name, loggerContext));
 	}
 
-	private RollingFileAppender<ILoggingEvent> createAppender(String name, LoggerContext loggerContext) {
+	private RollingFileAppender<ILoggingEvent> createAppender(String name, LoggerContext loggerContext) throws ScanException {
 		final RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
 		// 這裡設置級別過濾器
 		// appender.addFilter(createLevelFilter(level));
@@ -100,7 +105,7 @@ public class LogbackConfig {
 	}
 
 	private TimeBasedRollingPolicy<Object> createRollingPolicy(String name, LoggerContext context,
-			FileAppender<ILoggingEvent> appender) {
+			FileAppender<ILoggingEvent> appender) throws ScanException {
 		// 讀取logback配置文件中的屬性值，設置文件名
 
 		final StringBuilder stringBuilder = new StringBuilder();
@@ -132,7 +137,7 @@ public class LogbackConfig {
 		return rollingPolicyBase;
 	}
 
-	public File getByLogType(String category) {
+	public File getByLogType(String category) throws ScanException {
 
 		final Logger log = (Logger) LoggerFactory.getLogger(LogbackConfig.class);
 		if (this.set.contains(category)) {
@@ -146,7 +151,7 @@ public class LogbackConfig {
 		return null;
 	}
 
-	public File getLog(String category, String name) {
+	public File getLog(String category, String name) throws ScanException {
 		final Logger log = (Logger) LoggerFactory.getLogger(LogbackConfig.class);
 		if (this.set.contains(category)) {
 			final String substVars = OptionHelper.substVars("${logPath}" + category + "/" + FilenameUtils.getName(name),
