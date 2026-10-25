@@ -49,22 +49,24 @@ public abstract class AbstractSchedulingCronContextHolder
     @Override
     public synchronized void runOnce() {
         log.info("call runOnce code:{} ", this.scheduingKey.getCode());
-        if (this.oneScheduledFuture == null) {
-            this.oneScheduledFuture = this.taskScheduler.schedule(() -> {
-                try {
-                    AbstractSchedulingCronContextHolder.this.run();
-                } finally {
-                    this.oneScheduledFuture = null;
-                }
-            }, new Date());
-        } else {
-            if (schedulingConfigRepository.isDoubleClickOneRunningCancel()) {
-                oneScheduledFuture.cancel(schedulingConfigRepository.getCancel(this));
+        this.mainContext.ifExecuter(() -> {
+            if (this.oneScheduledFuture == null) {
+                this.oneScheduledFuture = this.taskScheduler.schedule(() -> {
+                    try {
+                        AbstractSchedulingCronContextHolder.this.run();
+                    } finally {
+                        this.oneScheduledFuture = null;
+                    }
+                }, new Date());
             } else {
-                throw new ApBusinessException("服務已啟動，不執行一次執行");
-            }
+                if (schedulingConfigRepository.isDoubleClickOneRunningCancel()) {
+                    oneScheduledFuture.cancel(schedulingConfigRepository.getCancel(this));
+                } else {
+                    throw new ApBusinessException("服務已啟動，不執行一次執行");
+                }
 
-        }
+            }
+        });
     }
 
     @Override

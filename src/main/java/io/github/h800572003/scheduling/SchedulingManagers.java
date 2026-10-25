@@ -19,6 +19,7 @@ public class SchedulingManagers {
 		Objects.requireNonNull(applicationContext);
 		Objects.requireNonNull(myScheduingMonitors);
 		Objects.requireNonNull(springSchedulingProperites);
+		Objects.requireNonNull(schedulingConfigRepository);
 		return new SpringSchedulingManager(schedulingRepository, applicationContext, myScheduingMonitors,
 				springSchedulingProperites,schedulingConfigRepository);
 	}
