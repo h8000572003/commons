@@ -1,0 +1,136 @@
+# 手動發佈 commons 到 Maven Central
+#   dry-run：版號 <base>-rc.<run_number>，上傳後只做 Central 驗證、不公開（驗證後到 Portal 按 Drop）
+#   release：版號 <base>（或手動指定），公開發佈後打 tag 並建立 GitHub Release
+# <base> = pom 版號去掉 -SNAPSHOT
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: dry-run 只驗證不公開；release 正式發佈
+        type: choice
+        options: [dry-run, release]
+        default: dry-run
+      version:
+        description: 正式版號（例如 0.18.0），留空則用 pom 版號去掉 -SNAPSHOT
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: maven-central
+    permissions:
+      contents: write # 建立 tag 與 GitHub Release
+    env:
+      MODE: ${{ inputs.mode }}
+      INPUT_VERSION: ${{ inputs.version }}
+      ARTIFACT_ID: commons
+    steps:
+      - name: 正式版只能從 master 發佈
+        if: inputs.mode == 'release' && github.ref != 'refs/heads/master'
+        run: |
+          echo "::error::正式版只能從 master 發佈，目前為 $GITHUB_REF"
+          exit 1
+
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # 需要既有 tag 檢查版號是否重複
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+          server-id: central-portal # 不可用 central：新版 Maven 只允許 central 的帳密送到 repo.maven.apache.org
+          server-username: CENTRAL_TOKEN_USERNAME
+          server-password: CENTRAL_TOKEN_PASSWORD
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: 決定版號
+        id: version
+        run: |
+          POM_VERSION=$(mvn -B -ntp -q help:evaluate -Dexpression=project.version -DforceStdout)
+          BASE=${INPUT_VERSION:-${POM_VERSION%-SNAPSHOT}}
+          if [[ ! "$BASE" =~ ^[0-9]+(\.[0-9]+){2,3}$ ]]; then
+            echo "::error::版號 '$BASE' 格式錯誤，需為 MAJOR.MINOR.PATCH（可再加一段）"
+            exit 1
+          fi
+          if [[ "$MODE" == "release" ]]; then
+            VERSION=$BASE
+          else
+            VERSION=$BASE-rc.$GITHUB_RUN_NUMBER
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "pom 版號 $POM_VERSION → 發佈版號 $VERSION（$MODE）"
+
+      - name: 檢查版號未發佈過
+        if: inputs.mode == 'release'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "::error::tag $TAG 已存在"
+            exit 1
+          fi
+          URL="https://repo1.maven.org/maven2/io/github/h8000572003/$ARTIFACT_ID/$VERSION/$ARTIFACT_ID-$VERSION.pom"
+          if [[ "$(curl -s -o /dev/null -w '%{http_code}' "$URL")" == "200" ]]; then
+            echo "::error::$ARTIFACT_ID $VERSION 已在 Maven Central"
+            exit 1
+          fi
+
+      - name: 設定版號
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: mvn -B -ntp org.codehaus.mojo:versions-maven-plugin:2.18.0:set -DnewVersion="$VERSION" -DgenerateBackupPoms=false
+
+      # 此 repo 沒有其他 CI，發佈前執行完整測試
+      - name: 測試、打包、簽章並上傳到 Central
+        env:
+          CENTRAL_TOKEN_USERNAME: ${{ secrets.CENTRAL_TOKEN_USERNAME }}
+          CENTRAL_TOKEN_PASSWORD: ${{ secrets.CENTRAL_TOKEN_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+        run: |
+          if [[ "$MODE" == "release" ]]; then
+            ARGS="-Dcentral.autoPublish=true -Dcentral.waitUntil=published"
+          else
+            ARGS="-Dcentral.autoPublish=false -Dcentral.waitUntil=validated"
+          fi
+          mvn -B -ntp -P release deploy $ARGS
+
+      - name: 建立 tag 與 GitHub Release
+        if: inputs.mode == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git tag "$TAG" "$GITHUB_SHA"
+          git push origin "$TAG"
+          gh release create "$TAG" target/"$ARTIFACT_ID-$VERSION"*.jar \
+            --title "$ARTIFACT_ID $VERSION" --generate-notes
+
+      - name: 摘要
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          {
+            echo "### $ARTIFACT_ID $VERSION（$MODE）"
+            if [[ "$MODE" == "release" ]]; then
+              echo "已發佈，約 30 分鐘後可在 https://repo1.maven.org/maven2/io/github/h8000572003/$ARTIFACT_ID/$VERSION/ 查到。"
+              echo "請把 pom 版號改成下一版 -SNAPSHOT。"
+            else
+              echo "已通過 Central 驗證、未公開。請到 https://central.sonatype.com/publishing/deployments 確認後按 Drop。"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
