@@ -16,6 +16,9 @@ public class SchedulingConfigRepository implements ISchedulingConfigRepository {
     @Value("${backend.task.double-click-one:true}")
     private boolean isDoubleClick;
 
+    @Value("${backend.task.run-once-executer-only:false}")
+    private boolean isRunOnceExecuterOnly;
+
     @Override
     public boolean getCancel(AbstractSchedulingCronContextHolder abstractSchedulingCronContextHolder) {
         if (interruptTask.contains(abstractSchedulingCronContextHolder.getCode())) {
@@ -27,5 +30,10 @@ public class SchedulingConfigRepository implements ISchedulingConfigRepository {
     @Override
     public boolean isDoubleClickOneRunningCancel() {
         return isDoubleClick;
+    }
+
+    @Override
+    public boolean isRunOnceExecuterOnly() {
+        return isRunOnceExecuterOnly;
     }
 }

@@ -41,7 +41,7 @@ JUnit 5 + AssertJ + Mockito（BDDMockito），另有測試用相依 `io.github.c
 - 執行者權限：`ISpringSchedulingProperites.isExecute()` 決定本機是否為執行者（多台主機只有一台執行）。`start`／`cancel`／`runOnce`／`up` 都經 `ISchedulingContext.ifExecuter` 檢查；非執行者仍可 `propertiesChange()` 載入任務供查詢，`down()` 也能釋放資源。
 - 生命週期：`up()` = 載入任務 + `upHook` + `startAll()`；`propertiesChange()` 只載入不啟動，且有任務排程中／執行中時會拒絕；`down()` 期間 `lock` 為 true，其他操作會拋「服務忙碌中」。`down()` 等待 `getCloseTimeout()` 秒後若仍有執行緒，交給 `ISchedulingShutdownPolicy`（預設空白策略＝不處理；`InterruptSchedulingShutdownPolicy` 會中斷並回報殘留），殘留執行緒存活期間 `up()` 會拒絕。
 - 擴充點以 setter 或 default method 提供（`setSpringSchedulingHook`、`setShutdownPolicy`、`ISchedulingConfigRepository.newItem` 等）。依維護者的要求，新增功能時採「新增介面／預設實作維持原行為」的擴充方式，不修改既有建構子參數與介面方法簽章。
-- `ISchedulingConfigRepository.getCancel` 決定取消時是否中斷執行緒（`SchedulingConfigRepository` 對應 `backend.task.cancel`、`backend.task.interrupt.codes`、`backend.task.double-click-one`）。
+- `ISchedulingConfigRepository.getCancel` 決定取消時是否中斷執行緒（`SchedulingConfigRepository` 對應 `backend.task.cancel`、`backend.task.interrupt.codes`、`backend.task.double-click-one`、`backend.task.run-once-executer-only`）。
 - 事件通知走 `IScheduingMonitor`（`MyScheduingMonitors` 為多個 monitor 的組合）。
 
 ### cmd

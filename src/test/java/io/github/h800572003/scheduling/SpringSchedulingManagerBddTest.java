@@ -584,9 +584,25 @@ class SpringSchedulingManagerBddTest {
 		}
 
 		@Test
-		@DisplayName("Given 非執行者主機 When runOnce Then 拋出非執行者無權限操作且不執行")
-		void givenNotExecuter_whenRunOnce_thenError() {
+		@DisplayName("Given 非執行者主機(預設不限執行者) When runOnce Then 仍執行一次")
+		void givenNotExecuter_whenRunOnce_thenExecuteOnce() {
 			properites.execute = false;
+			crons.add(new FakeCron("A", TaskA.class, NEVER));
+			manager.propertiesChange();
+
+			manager.runOnce("A");
+
+			ISchedulingItemContext item = item("A");
+			then(monitor).should(timeout(3000)).updateEnd(item);
+			assertThat(taskA.executions.get()).isEqualTo(1);
+			assertThat(item.getStatus()).isEqualTo(SchedulingStatusCodes.IDLE.name());
+		}
+
+		@Test
+		@DisplayName("Given 非執行者主機且設定執行一次限執行者 When runOnce Then 拋出非執行者無權限操作且不執行")
+		void givenNotExecuterAndRunOnceExecuterOnly_whenRunOnce_thenError() {
+			properites.execute = false;
+			configRepository.runOnceExecuterOnly = true;
 			crons.add(new FakeCron("A", TaskA.class, NEVER));
 			manager.propertiesChange();
 
@@ -1353,6 +1369,7 @@ class SpringSchedulingManagerBddTest {
 	static class FakeConfigRepository implements ISchedulingConfigRepository {
 		volatile boolean cancel = false;
 		volatile boolean doubleClickCancel = false;
+		volatile boolean runOnceExecuterOnly = false;
 		final List<String> newItemCodes = Collections.synchronizedList(new ArrayList<>());
 
 		@Override
@@ -1369,6 +1386,11 @@ class SpringSchedulingManagerBddTest {
 		@Override
 		public boolean isDoubleClickOneRunningCancel() {
 			return doubleClickCancel;
+		}
+
+		@Override
+		public boolean isRunOnceExecuterOnly() {
+			return runOnceExecuterOnly;
 		}
 	}
 

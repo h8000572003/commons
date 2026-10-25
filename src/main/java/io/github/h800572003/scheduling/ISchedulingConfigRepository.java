@@ -28,6 +28,15 @@ public interface ISchedulingConfigRepository {
     }
 
     /**
+     * 執行一次是否限執行者主機，預設不限制，非執行者主機也可執行一次(供測試)
+     *
+     * @return true 時非執行者主機執行一次會拋出非執行者無權限操作
+     */
+    default boolean isRunOnceExecuterOnly() {
+        return false;
+    }
+
+    /**
      * 取得註冊服務
      * @param pclass
      * @return
